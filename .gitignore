@@ -1,0 +1,6 @@
+/hooks
+/node_modules
+/plugins
+/*.7z
+/*.xls
+/*.bat
