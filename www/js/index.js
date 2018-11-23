@@ -98,11 +98,14 @@ function Chart(title){
 
 var donde=null;
 function onBackKeyDown(){
-	if(donde==null) navigator.app.exitApp();
+	/*if(donde==null) navigator.app.exitApp();
 	else{
 		donde=null;
 		p1Init();
-	}
+	}*/
+	if(document.getElementById('menu').style.display == 'block') p1Clicked();
+	else if(document.getElementById('p1').style.display == 'block') navigator.app.exitApp();
+	else showP1(); // contaminantes o p2
 }
 
 function init(){

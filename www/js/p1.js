@@ -23,6 +23,15 @@ function mapX(v){
 function mapY(v){
 	return v * perc();
 }
+var colorOverMag={rojo:{style:"background-color:red; color: white"}, naranja:{style:"background-color:orange; color: black"}, amarillo:{style:"background-color:yellow; color: black"}, verde:{style:"background-color:green; color: white"}};
+function getOverColour(mag, value){
+	var limite = data.getLimite(mag);
+	var overflow = value/limite.limite;
+	if(overflow>=1) return colorOverMag.rojo;
+	else if(overflow>=.75) return colorOverMag.naranja;
+	else if(overflow>=.5)  return colorOverMag.amarillo;
+	else return colorOverMag.verde;
+}
 function getStyleLines(lines){
 	var style='green';
 	for(var i=0; i<lines.length; i++){
@@ -66,7 +75,7 @@ function getCuadro(){
 	var filas="";
 	//info(data.zonas);
 	for (var keyZ in data.zonas) {
-		info('keyZ:'); info(keyZ);
+		//info('keyZ:'); info(keyZ);
 		var zona=data.zonas[keyZ];
 		//info(zona);
 		var linesZone=data.filterByZone(keyZ, data.lines);
@@ -75,27 +84,162 @@ function getCuadro(){
 			var value=data.getLimite(mag[m]).limite;
 			var linesByZoneAndMag=data.filterByMagnitude(mag[m].code, linesZone);
 			var style = getStyleLines(linesByZoneAndMag);
-			fila+=html('td',{style:"background-color:"+style+""}, "<br>");
+			fila+=html('td',{style:"background-color:"+style}, "<br>");
 		}
 		fila=html('td',{width:"8%"},keyZ)+fila;
 		filas+=html('tr',null,fila);
 	}
 	//info('cuadro='+filas);
-	return html('table',{width:"100%"}, fila1+filas);
+	return html('table',{style:"width:100%; padding: 15px;"}, fila1+filas);
+}
+function infoMagnitud(mag, lines){
+	var valor=null;
+	var li = data.getLimite(mag);
+	var campos={maximaDiaria:"Máxima diaria", mediaHoraria:"Media horaria", mediaDiaria:"Media diaria", mediaAnual:"Media anual"};
+	var limites={limite:"Límite", critico:"Crítico", alerta:"de alerta", informacion:"de información", objetivo:"objetivo"};
+	var trs="";
+	var str=html('div',null,"Descripción")+html('div',null,mag.descripcion);
+	str+=html('div',null,"Efectos")+html('div',null,mag.efectos);
+	for(var cKey in campos){
+		var td1="";
+		if(cKey in mag){
+			var campo=mag[cKey];
+			td1=html('td',{"class":"valor"},campos[cKey]);
+			var td2="";
+			for(lKey in limites){
+				if(lKey in campo){
+					var limite=campo[lKey];
+					td2+=html('span',{"class":"limite"},"nivel "+limites[lKey]+": "+limite+" ");
+				}
+			}
+			trs+=html('tr',{"class":"NPI"}, td1+html('td',null, td2));
+		}
+	}
+	if(trs.length>0){
+		var pp=html('td',null,html('span',colorOverMag.verde,'Verde')+'<'+(li.limite*.5)+'<br />'+html('span',colorOverMag.amarillo,'Amarillo')+'>='+(li.limite*.5)+'<br />'+html('span',colorOverMag.naranja,'Naranja')+'>='+(li.limite*.75)+'<br />'+html('span',colorOverMag.rojo,'Rojo')+'>='+(li.limite));
+		str+=html('table',{"class":"tabla"}, trs) + html('table',null, html('tr',null,pp));
+	}
+	///
+	if(lines.length>0){
+		var linesOrder={"Máximos": ["maxValue", data.sortAscByMax(lines).slice(),mag.unidad], "Mínimos": ["minValue", data.sortAscByMin(lines).slice(),mag.unidad], "Media" : ["avgValue", data.sortAscByAvg(lines).slice(),mag.unidad], "Mediana":["medianValue", data.sortAscByMedian(lines).slice(),mag.unidad]}; //, "Nº de valores":["cntValues", data.sortAscByCntValues(lines).slice(),"valores"]};
+		trs="";
+		var divs="";
+		for(klo in linesOrder){
+			var property=linesOrder[klo][0];
+			var linesO=linesOrder[klo][1];
+			var sufijo=linesOrder[klo][2];
+			var max=linesO[0], min=linesO[linesO.length-1];
+			trs+= html('tr',null,
+				html('td',{id:mag.abrv+klo, "class":"mini-boton", onclick:"clickValor('"+mag.abrv+klo+"')"},klo)+
+				html('td',null,data.estaciones[max.station].name+'<br />'+spanColoreado(mag,max[property])+' '+sufijo)+
+				html('td',null,data.estaciones[min.station].name+'<br />'+spanColoreado(mag,min[property])+' '+sufijo));
+				ids.valor.push(mag.abrv+klo);
+			var trs2="";
+			for(var i in linesO){
+				var lin = linesO[i];
+				trs2+=html('tr',null,
+					html('td',null,data.estaciones[lin.station].name)+
+					html('td',null,spanColoreado(mag, lin[property])+' '+sufijo));
+			}
+			divs+=html('div',{id:mag.abrv+klo+'tabla', "class":"oculto"}, html('table',{"class":"tabla"},trs2));
+		}
+		str+="<br />"+html("table",{"class":"tabla"},trs)+"<br />"+divs;
+	}
+	//info(str);
+	///
+	ids.mag.push(mag.abrv);
+	return html('div',{"class":"general",onclick:"clickMag('"+mag.abrv+"')"},mag.name+" ("+mag.abrv+")")+html('div',{id:mag.abrv, "class":"oculto"},str);
+}
+function spanColoreado(mag, valor){
+	var v = Math.round(valor);
+	return html('span',getOverColour(mag, v),v);
+}
+var ids={valor:[], mag:[]};
+function ocultaTodos(ids, sufijo){
+	for(var i in ids){
+		id=ids[i];
+		var el = document.getElementById(id+sufijo);
+		if(!!el){
+			if(el.classList.contains("show")){
+				el.classList.remove("show");
+				el.classList.add("oculto");
+			}
+		}
+	}
+}
+function clickValor(code){
+	//info(code);
+	ocultaTodos(ids.valor,'tabla');
+	for(var i in ids.valor){
+		id=ids.valor[i];
+		var el = document.getElementById(id);
+		if(!!el){
+			if(el.classList.contains("mini-boton-selected")){
+				el.classList.remove("mini-boton-selected");
+				el.classList.add("mini-boton");
+			}
+		}
+	}
+	document.getElementById(code).classList.remove("mini-boton");
+	document.getElementById(code).classList.add("mini-boton-selected");
+	var el = document.getElementById(code+'tabla');
+	if(el.classList.contains("oculto")){
+		el.classList.add("show");
+		el.classList.remove("oculto");
+	}else{
+		el.classList.remove("show");
+		el.classList.add("oculto");
+	}
+}
+function clickMag(codeMag){
+	ocultaTodos(ids.mag,"");
+	var el = document.getElementById(codeMag);
+	if(el.classList.contains("oculto")){
+		el.classList.add("show");
+		el.classList.remove("oculto");
+	}else{
+		el.classList.remove("show");
+		el.classList.add("oculto");
+	}
+}
+function infoContaminantes(){
+	var str="";
+	ids.valor=[];
+	for(var attr in data.magnitudes){
+		var mag=data.magnitudes[attr]; //name, abrv, unidad, (maximaDiaria|mediaHoraria|mediaDiaria|mediaAnual)(limite|critico|alerta|informacion|objetivo), descripcion, efectos
+		var lines=data.filterByMagnitude(attr, data.lines);
+		var stat=data.getStatistics(lines); // stat={value:{}, avg:{}, median:{}, cntValues:{}}; // object
+		str += infoMagnitud(mag, lines);
+	}
+	info("infoContaminantes:");
+	info(str);
+	return str;
 }
 function p1Clicked(){
 	document.getElementById('p1').style.display = 'none';
 	document.getElementById('cuerpo').style.display = 'block';
 	donde='p2';
 }
+function contaminantesClicked(){
+	document.getElementById('contaminantes').style.display = 'block';
+	document.getElementById('p1').style.display = 'none';
+	document.getElementById('cuerpo').style.display = 'none';
+	donde='p2';
+}
+function showP1(){
+	document.getElementById('p1').style.display = 'block';
+	document.getElementById('cuerpo').style.display = 'none';
+	document.getElementById('contaminantes').style.display = 'none';
+	document.getElementById('menu').style.display = 'none';
+}
 function p1Init(){
 	console.log('p1 init '+ lines.length);
 	document.getElementById("svg").innerHTML = getMapa();
 	info(document.getElementById("svg").innerHTML);
 	document.getElementById("cuadro").innerHTML = getCuadro();
+	document.getElementById("contaminantes").innerHTML = infoContaminantes();
 	
-	document.getElementById('p1').style.display = 'block';
-	document.getElementById('cuerpo').style.display = 'none';
+	showP1();
 }
 function resizedP1(){
 	p1Init();

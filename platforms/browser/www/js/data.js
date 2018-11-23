@@ -8,12 +8,12 @@ var data =  {
 			"28079006": {name:"Pza. Dr. Marañón", color:'Brown'},
 			"28079007": {name:"Pza. M. de Salamanca", color:'Beige'}, "28079008": {name:"Escuelas Aguirre", color:'Maroon'},
 			"28079009": {name:"Pza. Luca de Tena", color:'Mint'},
-			"28079010": {name:"Cuatro Caminos", color:'FireBrick'},	"28079038": {name:"Cuatro Caminos", color:'FireBrick'},
+			"28079010": {name:"Cuatro Caminos", color:'Gold'},	"28079038": {name:"Cuatro Caminos", color:'Gold'},
 			"28079011": {name:"Av. Ramón y Cajal", color:'Olive'}, "28079012": {name:"Pza. Manuel Becerra", color:'DarkGoldenRod'},
 			"28079013": {name:"Vallecas", color:'Coral'}, "28079040": {name:"Vallecas", color:'Coral'},
 			"28079014": {name:"Pza. Fdez. Ladreda", color:'CornflowerBlue'}, "28079015": {name:"Pza. Castilla", color:'DarkSalmon'},
 			"28079016": {name:"Arturo Soria", color: 'DeepSkyBlue'}, "28079017": {name:"Villaverde Alto", color:'Fuchsia'},
-			"28079018": {name:"C/ Farolillo", color:'Gold'}, "28079019": {name:"Huerta Castañeda", color:'IndianRed'}, "28079020": {name:"Moratalaz", color:'LawnGreen'},
+			"28079018": {name:"C/ Farolillo", color:'FireBrick'}, "28079019": {name:"Huerta Castañeda", color:'IndianRed'}, "28079020": {name:"Moratalaz", color:'LawnGreen'},
 			"28079036": {name:"Moratalaz II", color:'LawnGreen'}, "28079021": {name:"Pza. Cristo Rey", color:'LightCoral'}, "28079022": {name:"Pº. Pontones", color:'LightPink'},
 			"28079023": {name:"Final C/ Alcalá", color:''},
 			"28079024": {name:"Casa de Campo", color:'LimeGreen'}, "28079025": {name:"Santa Eugenia", color:'LightSeaGreen'},
@@ -30,14 +30,14 @@ var data =  {
 		   "Noroeste":    ["28079058","28079024"],
 		   "Suroeste":    ["28079014","28079056","28079018","28079017"]},
 // https://gestiona.madrid.org/azul_internet/html/web/2_3.htm?ESTADO_MENU=2_3
- magnitudes:{"01": {name: "Dioxido de Azufre",     abrv:"SO2",   unidad:"µg/m3", mediaHoraria:{limite: 350}, mediaDiaria:{limite: 125}},
-			 "06": {name: "Monoxido de Carbono",   abrv:"CO",    unidad:"mg/m3", maximaDiaria:{limite: 10}},
-			 "07": {name: "Monoxido de Nitrogeno", abrv:"NO",    unidad:"µg/m3"},
-			 "08": {name: "Dioxido de Nitrogeno",  abrv:"NO2",   unidad:"µg/m3", mediaAnual:{limite:40}, mediaHoraria:{limite: 200}},
+ magnitudes:{"01": {name: "Dioxido de Azufre",     abrv:"SO2",   unidad:"µg/m3", mediaHoraria:{limite: 350}, mediaDiaria:{limite: 125}, efectos: "El SO2 es un gas incoloro que a altas concentraciones puede ser detectado por su sabor y por su olor cáustico e irritante"},
+			 "06": {name: "Monoxido de Carbono",   abrv:"CO",    unidad:"mg/m3", maximaDiaria:{limite: 10}, efectos:"El monóxido de carbono inhalado se combina con la hemoglobina de la sangre provocando la diminución de oxígeno suministrado al cuerpo. Respirar concentraciones de monóxido de carbono puede inducir dolor de cabeza, náuseas, cansancio y dificultad de pensar con claridad"},
+			 "07": {name: "Monoxido de Nitrogeno", abrv:"NO",    unidad:"µg/m3", descripcion: "El monóxido de nitrógeno (NO) es un gas incoloro y poco soluble en agua, presente en pequeñas cantidades en los mamíferos. Está también extendido por el aire siendo producido en automóviles y plantas de energía. Se considera un agente tóxico", efectos: ""},
+			 "08": {name: "Dioxido de Nitrogeno",  abrv:"NO2",   unidad:"µg/m3", mediaAnual:{limite:40}, mediaHoraria:{limite: 200, alerta: 400}},
 			 "09": {name: "Particulas < 2.5 um",   abrv:"PM2,5", unidad:"µg/m3", mediaAnual:{limite: 25}},
 			 "10": {name: "Particulas < 10 um",    abrv:"PM10",  unidad:"µg/m3", mediaDiaria:{limite: 50}, mediaAnual:{limite:40}},
-			 "12": {name: "Oxidos de Nitrogeno",   abrv:"NOx",   unidad:"µg/m3", mediaAnual:{critico: 30}},
-			 "14": {name: "Ozono Troposférico",    abrv:"O3",    unidad:"µg/m3", maximaDiaria: {objetivo: 120, alerta:240, informacion:180}},
+			 "12": {name: "Oxidos de Nitrogeno",   abrv:"NOx",   unidad:"µg/m3" },
+			 "14": {name: "Ozono Troposférico",    abrv:"O3",    unidad:"µg/m3", maximaDiaria: {objetivo: 120}, mediaHoraria: {alerta:240, informacion:180}},
 			 "19": {name: "Plomo",                 abrv:"Pb"},
 			 "20": {name: "Tolueno",               abrv:"TOL",   unidad:"µg/m3"},
 			 "28": {name: "Cadmio",                abrv:"Cd"},
@@ -75,8 +75,9 @@ getOverflowSomeLimit : function(line){ // Devuelve el % de overflow sobre el lim
 	var limite = data.getLimite(mag);
 	var overflow=0;
 	if('maximaDiaria' in mag) overflow = line.maxHour!=-1?line.values[line.maxHour]:0;
-	else overflow = line.avgValue;
-	if (overflow/limite.limite>.5) info(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
+	else overflow = line.medianValue; //line.avgValue;
+	if (overflow/limite.limite>.5)
+		info(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
 	return overflow/limite.limite;
 },
 
@@ -273,7 +274,7 @@ filterByStation : function(inStation, lines){
 filterByMagnitude : function(inMagnitude, lines){
 	var linesInMagnitude=[];
 	for(var i=0; i<lines.length; i++) if(lines[i].magnitude==inMagnitude) linesInMagnitude.push(lines[i]);
-	info(linesInMagnitude.length+' linesInMagnitude found of '+inMagnitude+' in '+lines.length+' lines.length');
+	//info(linesInMagnitude.length+' linesInMagnitude found of '+inMagnitude+' in '+lines.length+' lines.length');
 	return linesInMagnitude;
 },
 

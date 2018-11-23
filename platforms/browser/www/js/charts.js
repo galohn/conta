@@ -122,8 +122,11 @@ p.doOnMousePress = function () {
 		info('--------------');
 		var str='', i=0;
 		for(mag in data.magnitudes){
-			if(data.filterByMagnitude(mag, lines).length>0)
-				str+='<div onclick="'+extVName+'.setMagnitud(\''+mag+'\');" style="background-color:'+colors[i++]+'">'+data.magnitudes[mag].name+'</div>'
+			if(data.filterByMagnitude(mag, lines).length>0){
+				var dentro=data.magnitudes[mag].abrv+" : "+data.magnitudes[mag].name;
+				//str+='<div onclick="'+extVName+'.setMagnitud(\''+mag+'\');" style="background-color:'+colors[i++]+'">'+data.magnitudes[mag].name+'</div>'
+				str+=html('div',{onclick: extVName+'.setMagnitud(\''+mag+'\');', style:"background-color:DarkSalmon"},dentro);
+			}
 		}
 		str='<div id="myDropdown" class="show">'+str+'</div>';
 		
@@ -137,7 +140,8 @@ p.doOnMousePress = function () {
 		var str='', i=0;
 		for(idx in typeFilter){
 			var tf = typeFilter[idx];
-			str+='<div onclick="'+extVName+'.setTypeFilter(\''+idx+'\');" style="background-color:'+colors[i++]+'">'+tf.txt+'</div>'
+			//str+='<div onclick="'+extVName+'.setTypeFilter(\''+idx+'\');" style="background-color:'+colors[i++]+'">'+tf.txt+'</div>'
+			str+=html('div',{onclick: extVName+'.setTypeFilter(\''+idx+'\');', style:"background-color:DarkSalmon"}, tf.txt);
 		}
 		str='<div id="myDropdown" class="show">'+str+'</div>';
 		
@@ -251,7 +255,8 @@ p.pieChart = function(cont, filterTxt, lines) {
 	p.textSize(this.getTextSize());
 	if(x0<xy.x) p.textAlign(p.CENTER);
 	else p.textAlign(p.LEFT);
-	this.shadowText(str, x0, y0, 'white', 'red');
+	if(y0>xy.y) y0-=20;
+	this.shadowText(str, x0-20, y0, 'white', 'black');
     lastAngle += p.radians(angles[i]);
   }
 }
@@ -312,12 +317,14 @@ p.barChart = function(cont, filterTxt, lines){
   for(var idxLine=0; idxLine<lines.length; idxLine++){
 	var line=lines[idxLine];
 	var values = line.values.slice(0, lastIdx);
-	info('barChart con '+values.length+' values');
+	//info('barChart con '+values.length+' values');
 
 	var x=margin+(idxLine*barWidth), y=margin+h;
   
     p.push();
-    p.fill(colors[idxLine%colors.length]);
+	var est = data.estaciones[lines[idxLine].station];
+	//info('est:'); info(est); info(est.color);
+    p.fill(est.color); //p.fill(colors[idxLine%colors.length]);
     p.noStroke();
 	for(var i=0; i<lastIdx; i++) {
 		if(values[i]!=-1){
@@ -336,10 +343,10 @@ p.barChart = function(cont, filterTxt, lines){
   }
   // Limite
   p.drawLimite(limite, maxValue, margin, w, y, margin, data.magnitudes[contaminante.code].unidad);
-  // labels
+  // labels valores numericos
   p.noStroke();
   p.removeLabels(labels);
-  for(var i=0; i<labels.length; i++) this.shadowText(labels[i].txt, labels[i].x, labels[i].y, 'white', 'red');
+  for(var i=0; i<labels.length; i++) this.shadowText(labels[i].txt, labels[i].x, labels[i].y, 'white', 'black');
   // Horas
   labels=[]
   for(var i=0; i<lastIdx; i++) labels.push({txt: i+"h", x: margin+(barWidth/2)+(i*(barWidth*lines.length+barMargin)), y: p.height-2}); //+ barWidth/2 + 5});
@@ -410,7 +417,8 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 			}
 
 			//
-			let c = p.color(colores[idx%colores.length]);
+			var est = data.estaciones[lines[idx].station];
+			let c = p.color(est.color); //p.color(colores[idx%colores.length]);
 			if(isArea) c.setAlpha(128);
 			if(isArea) p.fill(c);	else {p.noFill(); p.stroke(c);}
 
@@ -431,7 +439,7 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 	//p.textSize(this.getTextSize());
 	//p.fill('red');
 	p.removeLabels(labels);
-	for(var i=0; i<labels.length; i++) this.shadowText(labels[i].txt, labels[i].x, labels[i].y, 'white', 'red');
+	for(var i=0; i<labels.length; i++) this.shadowText(labels[i].txt, labels[i].x, labels[i].y, 'white', 'black');
 	// Pintamos las horas
 	if(!(values==undefined)){
 		p.fill('white');
@@ -440,17 +448,18 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 		p.removeLabels(horas);
 		for(var i=0; i<horas.length; i++) p.text(horas[i].txt, horas[i].x, horas[i].y);
 	}
-	// Pintamos los textos de las series
+	// Pintamos los textos de las series (estaciones)
 	p.textAlign(p.LEFT);
 	p.noStroke();
 	var x=10;
 	var y=p.height-1;
 	for(var idx=0; idx<lines.length; idx++){
 		//var chk=checks.length>idx?checks[idx]:{};
-		let c = p.color(colores[idx%colores.length]);
+		var est = data.estaciones[lines[idx].station];
+		let c = p.color(est.color); //p.color(colores[idx%colores.length]);
 		if(lines.length>1) c.setAlpha(128);
 		p.fill(c);
-		var txt = data.estaciones[lines[idx].station].name;
+		var txt = est.name;
 		//p.rect(x,y-15, 15, 15);
 		var chk = {x0:x, y0:y-15, x1:x+15, y1:y, selected: true};
 		if(checks[idx]==undefined || checks[idx]==null){

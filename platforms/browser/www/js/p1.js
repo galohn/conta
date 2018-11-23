@@ -66,7 +66,7 @@ function getCuadro(){
 	var filas="";
 	//info(data.zonas);
 	for (var keyZ in data.zonas) {
-		info('keyZ:'); info(keyZ);
+		//info('keyZ:'); info(keyZ);
 		var zona=data.zonas[keyZ];
 		//info(zona);
 		var linesZone=data.filterByZone(keyZ, data.lines);
@@ -91,7 +91,7 @@ function p1Clicked(){
 function p1Init(){
 	console.log('p1 init '+ lines.length);
 	document.getElementById("svg").innerHTML = getMapa();
-	info(document.getElementById("svg").innerHTML);
+	//info(document.getElementById("svg").innerHTML);
 	document.getElementById("cuadro").innerHTML = getCuadro();
 	
 	document.getElementById('p1').style.display = 'block';

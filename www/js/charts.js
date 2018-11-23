@@ -317,7 +317,7 @@ p.barChart = function(cont, filterTxt, lines){
   for(var idxLine=0; idxLine<lines.length; idxLine++){
 	var line=lines[idxLine];
 	var values = line.values.slice(0, lastIdx);
-	info('barChart con '+values.length+' values');
+	//info('barChart con '+values.length+' values');
 
 	var x=margin+(idxLine*barWidth), y=margin+h;
   

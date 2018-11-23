@@ -13,9 +13,9 @@ var data =  {
 			"28079013": {name:"Vallecas", color:'Coral'}, "28079040": {name:"Vallecas", color:'Coral'},
 			"28079014": {name:"Pza. Fdez. Ladreda", color:'CornflowerBlue'}, "28079015": {name:"Pza. Castilla", color:'DarkSalmon'},
 			"28079016": {name:"Arturo Soria", color: 'DeepSkyBlue'}, "28079017": {name:"Villaverde Alto", color:'Fuchsia'},
-			"28079018": {name:"C/ Farolillo", color:'FireBrick'}, "28079019": {name:"Huerta Castañeda", color:'IndianRed'}, "28079020": {name:"Moratalaz", color:'LawnGreen'},
+			"28079018": {name:"c/Farolillo", color:'FireBrick'}, "28079019": {name:"Huerta Castañeda", color:'IndianRed'}, "28079020": {name:"Moratalaz", color:'LawnGreen'},
 			"28079036": {name:"Moratalaz II", color:'LawnGreen'}, "28079021": {name:"Pza. Cristo Rey", color:'LightCoral'}, "28079022": {name:"Pº. Pontones", color:'LightPink'},
-			"28079023": {name:"Final C/ Alcalá", color:''},
+			"28079023": {name:"Final c/Alcalá", color:''},
 			"28079024": {name:"Casa de Campo", color:'LimeGreen'}, "28079025": {name:"Santa Eugenia", color:'LightSeaGreen'},
 			"28079026": {name:"Urb. Embajada (Barajas)", color:'Magenta'}, "28079027": {name:"Barajas", color:'MediumBlue'},
 			"28079047": {name:"Méndez Álvaro", color:'MediumSpringGreen'}, "28079048": {name:"Pº. Castellana Alta", color:'OrangeRed'}, "28079049": {name:"Retiro", color:'Orchid'},
@@ -30,18 +30,18 @@ var data =  {
 		   "Noroeste":    ["28079058","28079024"],
 		   "Suroeste":    ["28079014","28079056","28079018","28079017"]},
 // https://gestiona.madrid.org/azul_internet/html/web/2_3.htm?ESTADO_MENU=2_3
- magnitudes:{"01": {name: "Dioxido de Azufre",     abrv:"SO2",   unidad:"µg/m3", mediaHoraria:{limite: 350}, mediaDiaria:{limite: 125}},
-			 "06": {name: "Monoxido de Carbono",   abrv:"CO",    unidad:"mg/m3", maximaDiaria:{limite: 10}},
-			 "07": {name: "Monoxido de Nitrogeno", abrv:"NO",    unidad:"µg/m3"},
-			 "08": {name: "Dioxido de Nitrogeno",  abrv:"NO2",   unidad:"µg/m3", mediaAnual:{limite:40}, mediaHoraria:{limite: 200}},
-			 "09": {name: "Particulas < 2.5 um",   abrv:"PM2,5", unidad:"µg/m3", mediaAnual:{limite: 25}},
-			 "10": {name: "Particulas < 10 um",    abrv:"PM10",  unidad:"µg/m3", mediaDiaria:{limite: 50}, mediaAnual:{limite:40}},
-			 "12": {name: "Oxidos de Nitrogeno",   abrv:"NOx",   unidad:"µg/m3", mediaAnual:{critico: 30}},
-			 "14": {name: "Ozono Troposférico",    abrv:"O3",    unidad:"µg/m3", maximaDiaria: {objetivo: 120, alerta:240, informacion:180}},
+ magnitudes:{"01": {name: "Dioxido de Azufre",     abrv:"SO2",   unidad:"µg/m3", mediaHoraria:{limite: 350}, mediaDiaria:{limite: 125}, descripcion:"El SO2 es un gas incoloro", efectos: "A altas concentraciones puede ser detectado por su sabor y por su olor cáustico e irritante"},
+			 "06": {name: "Monoxido de Carbono",   abrv:"CO",    unidad:"mg/m3", maximaDiaria:{limite: 10}, efectos:"El monóxido de carbono inhalado se combina con la hemoglobina de la sangre provocando la diminución de oxígeno suministrado al cuerpo. Respirar concentraciones de monóxido de carbono puede inducir dolor de cabeza, náuseas, cansancio y dificultad de pensar con claridad"},
+			 "07": {name: "Monoxido de Nitrogeno", abrv:"NO",    unidad:"µg/m3", descripcion: "El monóxido de nitrógeno (NO) es un gas incoloro y poco soluble en agua, presente en pequeñas cantidades en los mamíferos. Está también extendido por el aire siendo producido en automóviles y plantas de energía. Se considera un agente tóxico", efectos: ""},
+			 "08": {name: "Dioxido de Nitrogeno",  abrv:"NO2",   unidad:"µg/m3", mediaAnual:{limite:40}, mediaHoraria:{limite: 200, alerta: 400}, descripcion:"La química atmosférica de los óxidos de nitrógeno es muy compleja. La mayoría de las combustiones liberan sobre todo óxido nítrico, el cual se convierte fácilmente en dióxido de nitrógeno en la atmósfera. La oxidación del NO a NO2 por oxidantes atmosféricos como el ozono, ocurre rápidamente, siendo esta una de las principales rutas de producción del NO2", efectos:"Respirar altos niveles de dióxido de nitrógeno durante poco tiempo perjudica las células pulmonares."},
+			 "09": {name: "Particulas <2.5 um",    abrv:"PM2,5", unidad:"µg/m3", mediaAnual:{limite: 25}, descripcion:"Partículas de diámetro aerodinámico inferior o igual a los 2,5 micras (polvo, cenizas, hollín, partículas metálicas, cemento y polen, entre otras). Su origen está principalmente en fuentes de carácter antropogénico como las emisiones de los vehículos diesel.", efectos:"Las partículas PM2,5 tienen efectos más severos sobre la salud que las más grandes, PM10. Asimismo, su tamaño hace que sean más ligeras y por eso, generalmente, permanecen por más tiempo en el aire. Ello no sólo prolonga sus efectos, sino que facilita su transporte por el viento a grandes distancias. Las partículas PM2,5, por tanto, se pueden acumular en el sistema respiratorio y están asociadas, cada vez con mayor consistencia científica, con numerosos efectos negativos sobre la salud, como el aumento de las enfermedades respiratorias y la disminución del funcionamiento pulmonar"},
+			 "10": {name: "Particulas <10 um",     abrv:"PM10",  unidad:"µg/m3", mediaDiaria:{limite: 50}, mediaAnual:{limite:40}, descripcion:"Partículas de diámetro aerodinámico inferior o igual a los 2,5 micras (polvo, cenizas, hollín, partículas metálicas, cemento y polen, entre otras). Pueden tener en su composición un importante componente de tipo natural", efectos:"La exposición prolongada o repetitiva a las PM10 puede provocar efectos nocivos en el sistema respiratorio de la persona, no obstante son menos perjudiciales que las PM2,5 ya que al tener un mayor tamaño, no logran atravesar los alveolos pulmonares, quedando retenidas en la mucosa que recubre las vías respiratorias superiores."},
+			 "12": {name: "Oxidos de Nitrogeno",   abrv:"NOx",   unidad:"µg/m3", descripcion:"Los óxidos de nitrógeno son un grupo de gases compuestos por óxido nítrico (NO) y dióxido de nitrógeno (NO2). El término NOX se refiere a la combinación de ambas sustancias", efectos:"Es una sustancia corrosiva para la piel y el tracto respiratorio. Una exposición prolongada puede afectar al sistema inmune y al pulmón, dando lugar a una menor resistencia frente a infecciones"},
+			 "14": {name: "Ozono Troposférico",    abrv:"O3",    unidad:"µg/m3", maximaDiaria: {objetivo: 120}, mediaHoraria: {alerta:240, informacion:180}},
 			 "19": {name: "Plomo",                 abrv:"Pb"},
-			 "20": {name: "Tolueno",               abrv:"TOL",   unidad:"µg/m3"},
-			 "28": {name: "Cadmio",                abrv:"Cd"},
-			 "30": {name: "Benceno",               abrv:"BEN",   unidad:"µg/m3", mediaAnual:{limite:5}},
+			 "20": {name: "Tolueno",               abrv:"TOL",   unidad:"µg/m3", descripcion:"Tolueno es un líquido incoloro transparente con un olor característico. Es un buen solvente.", efectos:"Exposiciones repetidas durante unas semanas puede producir dolores de cabeza y somnolencia y puede alterar la capacidad para pensar claramente. La exposición diaria en el trabajo a cantidades moderadas puede producir cansancio, confusión, debilidad, sensación de embriaguez, pérdida de la memoria, náusea y pérdida del apetito"},
+			 "28": {name: "Cadmio",                abrv:"Cd",    descripcion:"Es un metal pesado, blando, blanco azulado, relativamente poco abundante. Es uno de los metales más tóxicos. Normalmente se encuentra en menas de zinc y se emplea especialmente en pilas.", efectos:""},
+			 "30": {name: "Benceno",               abrv:"BEN",   unidad:"µg/m3", mediaAnual:{limite:5}, descripcion:"El benceno, conocido también como benzol, es un líquido incoloro de olor dulce y es sumamente inflamable.", efectos:"La exposición puede producir letargo, mareo, aceleración del latido del corazón, dolor de cabeza, temblores, confusión y pérdida del conocimiento. En la mayoría de los casos, los efectos desaparecerán cuando la exposición termina y la persona empieza a respirar aire fresco."},
 			 "35": {name: "Etilbenceno",           abrv:"EB",    unidad:"µg/m3"},
 			 "37": {name: "Metaxileno",            abrv:"m-Xil", unidad:"µg/m3"},
 			 "38": {name: "Paraxileno",            abrv:"PXY",   unidad:"µg/m3"},
@@ -64,7 +64,7 @@ getLimite : function(magnitud){
 	else if(valor!=null && 'informacion' in valor.valor) {valor.limite=valor.valor.informacion*1.5; valor.over='informacion'}
 	else if(valor!=null && 'objetivo' in valor.valor) {valor.limite=valor.valor.objetivo*2; valor.over='objetivo'}
 	else valor={limite: -1};
-	//info('limite en '+magnitud.name+'='+valor.limite);
+	info('limite en '+magnitud.name+'='+valor.limite);
 	return valor;
 },
 
@@ -75,8 +75,9 @@ getOverflowSomeLimit : function(line){ // Devuelve el % de overflow sobre el lim
 	var limite = data.getLimite(mag);
 	var overflow=0;
 	if('maximaDiaria' in mag) overflow = line.maxHour!=-1?line.values[line.maxHour]:0;
-	else overflow = line.avgValue;
-	if (overflow/limite.limite>.5) info(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
+	else overflow = line.medianValue; //line.avgValue;
+	if (overflow/limite.limite>.5)
+		info(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
 	return overflow/limite.limite;
 },
 
@@ -104,7 +105,7 @@ getLines : function(){
 				if (httpRq.readyState == 4 && httpRq.status == 200){
 					aCallback(httpRq.responseText);
 				}
-				else if(data.lines.length==0) data.readTextFile('data.txt');
+				//else if(data.lines.length==0) data.readTextFile('data.txt');
 			}
 
 			httpRq.open( "GET", aUrl, true );            
@@ -183,6 +184,8 @@ setStatistics : function(line){
 	}
 	line.maxHour=maxHour;
 	line.minHour=minHour;
+	line.maxValue=maxHour==-1?-1:line.values[maxHour];
+	line.minValue=minHour==-1?-1:line.values[minHour];
 	line.sumValues=sumValues;
 	line.cntValues=cntValues;
 	line.avgValue=cntValues==0?-1:sumValues/cntValues;
@@ -190,6 +193,17 @@ setStatistics : function(line){
 	var values=this.filterBySignificantValues(line.values);
 	var idxMitad=Math.trunc(values.length/2)-1;
 	line.medianValue=values.length>0?(values.length%2==0?(values[idxMitad]+values[idxMitad+1])/2:values[idxMitad]):-1;
+},
+
+sortAscByMin : function(lines){
+	// Ordena de menor a mayor según su mínimo valor en el dia
+	var x=lines.sort(function(a, b) {
+		var v1 = a.minHour==-1?-1:a.values[a.minHour];
+		var v2 = b.minHour==-1?-1:b.values[b.minHour];
+		return v1 - v2;
+	});
+	info(lines.length+' lines sorted asc by min');
+	return x;
 },
 
 sortAscByMax : function(lines){
@@ -241,6 +255,20 @@ sortAscByMedian : function(lines){
 	return x;
 },
 
+setMinMax : function(lines, obj){
+	obj.max=lines[0];
+	obj.min=lines[lines.length-1];
+},
+
+getStatistics : function(lines){
+	var stat={value:{}, avg:{}, median:{}, cntValues:{}}; // object
+	data.setMinMax(data.sortAscByMax(lines), stat.value);
+	data.setMinMax(data.sortAscByAvg(lines), stat.avg);
+	data.setMinMax(data.sortAscByMedian(lines), stat.median);
+	data.setMinMax(data.sortAscByCntValues(lines), stat.cntValues);
+	return stat;
+},
+
 filterBySignificantValues:function(values){
 	var result=[];
 	if(values!=null && values.length>0){
@@ -273,7 +301,7 @@ filterByStation : function(inStation, lines){
 filterByMagnitude : function(inMagnitude, lines){
 	var linesInMagnitude=[];
 	for(var i=0; i<lines.length; i++) if(lines[i].magnitude==inMagnitude) linesInMagnitude.push(lines[i]);
-	info(linesInMagnitude.length+' linesInMagnitude found of '+inMagnitude+' in '+lines.length+' lines.length');
+	//info(linesInMagnitude.length+' linesInMagnitude found of '+inMagnitude+' in '+lines.length+' lines.length');
 	return linesInMagnitude;
 },
 

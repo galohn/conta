@@ -1,6 +1,7 @@
 /hooks
 /node_modules
 /plugins
+/doc
 /*.7z
 /*.xls
 /*.bat
