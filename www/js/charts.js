@@ -299,15 +299,15 @@ p.barChart = function(cont, filterTxt, lines){
   this.showContaminante(cont);
   this.showFilter(filterTxt);
   this.showMenu();
-  var lastIdx = data.maxIdxValueWithoutValue(lines);
+  var lastIdx = data.maxIdxValueWithoutValue(lines)+1;
   var limite = data.getLimite(data.magnitudes[contaminante.code]).limite;
   var maxValue=Math.max(data.maxValue(lines), limite);
   var margin = border,
       w = p.width-menu.width - 2 * margin, // chart area width and height
       h = p.height - 2 * margin;
 
-  var barWidth =  (w / lastIdx+1) * 0.8 / lines.length; // width of bar
-  var barMargin = (w / lastIdx+1) * 0.2; // margin between two bars
+  var barWidth =  (w / lastIdx) * 0.8 / lines.length; // width of bar
+  var barMargin = (w / lastIdx) * 0.2; // margin between two bars
 
   p.push();
   p.stroke('dark-gray');

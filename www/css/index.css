@@ -139,7 +139,7 @@ h1 {
 	background-color: DeepSkyBlue; // azul
 }
 .general{
-	background-color: #7fba67;
+	background-color: DarkSalmon; /*#7fba67; -> verde*/
 	color: #ffffff;
 	border: none;
 	width: 100%;

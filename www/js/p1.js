@@ -84,7 +84,7 @@ function getCuadro(){
 			var value=data.getLimite(mag[m]).limite;
 			var linesByZoneAndMag=data.filterByMagnitude(mag[m].code, linesZone);
 			var style = getStyleLines(linesByZoneAndMag);
-			fila+=html('td',{style:"background-color:"+style}, "<br>");
+			fila+=html('td',{style:"background-color:"+style}, br());
 		}
 		fila=html('td',{width:"8%"},keyZ)+fila;
 		filas+=html('tr',null,fila);
@@ -92,14 +92,21 @@ function getCuadro(){
 	//info('cuadro='+filas);
 	return html('table',{style:"width:100%; padding: 15px;"}, fila1+filas);
 }
+function br(){return '<br />';}
+function tr(attr,content){return !!content?html('tr',attr,content):html('tr',null,attr);}
+function td(attr,content){return !!content?html('td',attr,content):html('td',null,attr);}
+function table(attr,content){return !!content?html('table',attr,content):html('table',null,attr);}
+function div(attr,content){return !!content?html('div',attr,content):html('div',null,attr);}
+
 function infoMagnitud(mag, lines){
 	var valor=null;
 	var li = data.getLimite(mag);
 	var campos={maximaDiaria:"Máxima diaria", mediaHoraria:"Media horaria", mediaDiaria:"Media diaria", mediaAnual:"Media anual"};
 	var limites={limite:"Límite", critico:"Crítico", alerta:"de alerta", informacion:"de información", objetivo:"objetivo"};
 	var trs="";
-	var str=html('div',null,"Descripción")+html('div',null,mag.descripcion);
-	str+=html('div',null,"Efectos")+html('div',null,mag.efectos);
+	var sep={style:"color: white; background-image: linear-gradient(to right, gray, white);"};
+	var str=html('div',sep,"Descripción")+html('div',{style:"text-align:justify;"},mag.descripcion);
+	str+=html('div',sep,"Efectos")+html('div',null,mag.efectos);
 	for(var cKey in campos){
 		var td1="";
 		if(cKey in mag){
@@ -116,8 +123,17 @@ function infoMagnitud(mag, lines){
 		}
 	}
 	if(trs.length>0){
-		var pp=html('td',null,html('span',colorOverMag.verde,'Verde')+'<'+(li.limite*.5)+'<br />'+html('span',colorOverMag.amarillo,'Amarillo')+'>='+(li.limite*.5)+'<br />'+html('span',colorOverMag.naranja,'Naranja')+'>='+(li.limite*.75)+'<br />'+html('span',colorOverMag.rojo,'Rojo')+'>='+(li.limite));
-		str+=html('table',{"class":"tabla"}, trs) + html('table',null, html('tr',null,pp));
+		trs=tr(td({style:"text-align:center;background-color:lightGray"},'Valores de'+br()+'protección') + td(table(trs)));
+		var tr1=html('tr',null,
+				html('td',colorOverMag.verde,'Verde')+html('td',null,'<')+html('td',null,li.limite*.5)+html('td',{width:'20px'},'')+
+				html('td',colorOverMag.naranja,'Naranja')+html('td',null,'>=')+html('td',null,li.limite*.75)
+				);
+		var tr2=html('tr',null,
+				html('td',colorOverMag.amarillo,'Amarillo')+html('td',null,'>=')+html('td',null,li.limite*.5)+html('td',null,'')+
+				html('td',colorOverMag.rojo,'Rojo')+html('td',null,'>=')+html('td',null,li.limite)
+				);
+		var pp=html('td',null,html('span',colorOverMag.verde,'Verde')+'<'+(li.limite*.5)+br()+html('span',colorOverMag.amarillo,'Amarillo')+'>='+(li.limite*.5)+br()+html('span',colorOverMag.naranja,'Naranja')+'>='+(li.limite*.75)+br()+html('span',colorOverMag.rojo,'Rojo')+'>='+(li.limite));
+		str+=br()+html('table',{"class":"tabla"}, trs) + br() + html('table',null, tr1+tr2); //html('tr',null,pp));
 	}
 	///
 	if(lines.length>0){
@@ -129,22 +145,23 @@ function infoMagnitud(mag, lines){
 			var linesO=linesOrder[klo][1];
 			var sufijo=linesOrder[klo][2];
 			var max=linesO[0], min=linesO[linesO.length-1];
-			trs+= html('tr',null,
-				html('td',{id:mag.abrv+klo, "class":"mini-boton", onclick:"clickValor('"+mag.abrv+klo+"')"},klo)+
-				html('td',null,data.estaciones[max.station].name+'<br />'+spanColoreado(mag,max[property])+' '+sufijo)+
-				html('td',null,data.estaciones[min.station].name+'<br />'+spanColoreado(mag,min[property])+' '+sufijo));
+			trs+= tr(
+				td({id:mag.abrv+klo, "class":"mini-boton", onclick:"clickValor('"+mag.abrv+klo+"')"},klo)+
+				td(data.estaciones[max.station].name+br()+spanColoreado(mag,max[property])+' '+sufijo)+
+				td(data.estaciones[min.station].name+br()+spanColoreado(mag,min[property])+' '+sufijo));
 				ids.valor.push(mag.abrv+klo);
-			var trs2="";
+			var trs2=tr(td({colspan:2,style:"background-color: DeepSkyBlue;color:white; text-align:center;"},klo));
 			for(var i in linesO){
 				var lin = linesO[i];
-				trs2+=html('tr',null,
-					html('td',null,data.estaciones[lin.station].name)+
-					html('td',null,spanColoreado(mag, lin[property])+' '+sufijo));
+				trs2+=tr(
+					td(data.estaciones[lin.station].name)+
+					td(spanColoreado(mag, lin[property])+' '+sufijo));
 			}
-			divs+=html('div',{id:mag.abrv+klo+'tabla', "class":"oculto"}, html('table',{"class":"tabla"},trs2));
+			divs+=div({id:mag.abrv+klo+'tabla', "class":"oculto"}, table({"class":"tabla"},trs2));
 		}
-		str+="<br />"+html("table",{"class":"tabla"},trs)+"<br />"+divs;
+		str+=br()+table({"class":"tabla"},trs)+br()+divs;
 	}
+	str=html('div',{style:"padding:15px;text-transform:none;"}, str);
 	//info(str);
 	///
 	ids.mag.push(mag.abrv);
@@ -155,52 +172,37 @@ function spanColoreado(mag, valor){
 	return html('span',getOverColour(mag, v),v);
 }
 var ids={valor:[], mag:[]};
-function ocultaTodos(ids, sufijo){
+function cambiaClass(el, este, xeste){
+	if(el.classList.contains(este)){
+		el.classList.remove(este);
+		el.classList.add(xeste);
+		return true;
+	}else return false;
+}
+function cambiaTodos(ids, sufijo,este,xeste){
 	for(var i in ids){
 		id=ids[i];
 		var el = document.getElementById(id+sufijo);
-		if(!!el){
-			if(el.classList.contains("show")){
-				el.classList.remove("show");
-				el.classList.add("oculto");
-			}
-		}
+		if(!!el) cambiaClass(el, este, xeste);
 	}
+}
+function toggle(el, este, xeste){
+	if (!cambiaClass(el, este, xeste))
+		cambiaClass(el, xeste, este);
 }
 function clickValor(code){
 	//info(code);
-	ocultaTodos(ids.valor,'tabla');
-	for(var i in ids.valor){
-		id=ids.valor[i];
-		var el = document.getElementById(id);
-		if(!!el){
-			if(el.classList.contains("mini-boton-selected")){
-				el.classList.remove("mini-boton-selected");
-				el.classList.add("mini-boton");
-			}
-		}
-	}
-	document.getElementById(code).classList.remove("mini-boton");
-	document.getElementById(code).classList.add("mini-boton-selected");
-	var el = document.getElementById(code+'tabla');
-	if(el.classList.contains("oculto")){
-		el.classList.add("show");
-		el.classList.remove("oculto");
-	}else{
-		el.classList.remove("show");
-		el.classList.add("oculto");
-	}
+	cambiaTodos(ids.valor,'tabla','show','oculto');
+	cambiaTodos(ids.valor,'','mini-boton-selected','mini-boton');
+
+	toggle(document.getElementById(code), "mini-boton", "mini-boton-selected");
+	toggle(document.getElementById(code+'tabla'), "oculto", "show");
 }
 function clickMag(codeMag){
-	ocultaTodos(ids.mag,"");
-	var el = document.getElementById(codeMag);
-	if(el.classList.contains("oculto")){
-		el.classList.add("show");
-		el.classList.remove("oculto");
-	}else{
-		el.classList.remove("show");
-		el.classList.add("oculto");
-	}
+	var el=document.getElementById(codeMag);
+	var sw=el.classList.contains('show');
+	cambiaTodos(ids.mag,"",'show','oculto');
+	if(!sw)cambiaClass(el, "oculto", "show");
 }
 function infoContaminantes(){
 	var str="";
@@ -233,7 +235,7 @@ function showP1(){
 	document.getElementById('menu').style.display = 'none';
 }
 function p1Init(){
-	console.log('p1 init '+ lines.length);
+	info('p1 init '+ lines.length);
 	document.getElementById("svg").innerHTML = getMapa();
 	info(document.getElementById("svg").innerHTML);
 	document.getElementById("cuadro").innerHTML = getCuadro();
