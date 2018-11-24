@@ -23,11 +23,12 @@ function mapX(v){
 function mapY(v){
 	return v * perc();
 }
-var colorOverMag={rojo:{style:"background-color:red; color: white"}, naranja:{style:"background-color:orange; color: black"}, amarillo:{style:"background-color:yellow; color: black"}, verde:{style:"background-color:green; color: white"}};
+var colorOverMag={gray:{style:"background-color:gray; color: white"},rojo:{style:"background-color:red; color: white"}, naranja:{style:"background-color:orange; color: black"}, amarillo:{style:"background-color:yellow; color: black"}, verde:{style:"background-color:green; color: white"}};
 function getOverColour(mag, value){
 	var limite = data.getLimite(mag);
 	var overflow = value/limite.limite;
-	if(overflow>=1) return colorOverMag.rojo;
+	if(limite.limite==-1) return colorOverMag.gray;
+	else if(overflow>=1) return colorOverMag.rojo;
 	else if(overflow>=.75) return colorOverMag.naranja;
 	else if(overflow>=.5)  return colorOverMag.amarillo;
 	else return colorOverMag.verde;
@@ -62,13 +63,13 @@ function getZone(zone, style){
 function getMapa(){return getZone(no,'blue')+getZone(ne,'yellow')+getZone(c,'pink')+getZone(so,'green')+getZone(se,'coral');}
 function getCuadro(){
 	var mag=[];
-	var fila1=html('td');
+	var fila1=td();
 	for(var key in data.magnitudes){
 		var magn=data.magnitudes[key];
 		if(data.getLimite(magn).limite!=-1){
 			magn.code=key;
 			mag.push(magn);
-			fila1+=html('td',{style:"text-align: center"},magn.abrv);
+			fila1+=td({style:"text-align: center"},magn.abrv);
 		}
 	}
 	//info('mag:'); info(mag);
@@ -84,13 +85,13 @@ function getCuadro(){
 			var value=data.getLimite(mag[m]).limite;
 			var linesByZoneAndMag=data.filterByMagnitude(mag[m].code, linesZone);
 			var style = getStyleLines(linesByZoneAndMag);
-			fila+=html('td',{style:"background-color:"+style}, br());
+			fila+=td({style:"background-color:"+style}, br());
 		}
-		fila=html('td',{width:"8%"},keyZ)+fila;
-		filas+=html('tr',null,fila);
+		fila=td({width:"8%"},keyZ)+fila;
+		filas+=tr(fila);
 	}
 	//info('cuadro='+filas);
-	return html('table',{style:"width:100%; padding: 15px;"}, fila1+filas);
+	return table({style:"width:100%; padding: 15px;"}, fila1+filas);
 }
 function br(){return '<br />';}
 function tr(attr,content){return !!content?html('tr',attr,content):html('tr',null,attr);}
@@ -105,13 +106,13 @@ function infoMagnitud(mag, lines){
 	var limites={limite:"Límite", critico:"Crítico", alerta:"de alerta", informacion:"de información", objetivo:"objetivo"};
 	var trs="";
 	var sep={style:"color: white; background-image: linear-gradient(to right, gray, white);"};
-	var str=html('div',sep,"Descripción")+html('div',{style:"text-align:justify;"},mag.descripcion);
-	str+=html('div',sep,"Efectos")+html('div',null,mag.efectos);
+	var str=div(sep,"Descripción")+div({style:"text-align:justify;"},mag.descripcion);
+	str+=div(sep,"Efectos")+div(mag.efectos);
 	for(var cKey in campos){
 		var td1="";
 		if(cKey in mag){
 			var campo=mag[cKey];
-			td1=html('td',{"class":"valor"},campos[cKey]);
+			td1=td({"class":"valor"},campos[cKey]);
 			var td2="";
 			for(lKey in limites){
 				if(lKey in campo){
@@ -119,53 +120,64 @@ function infoMagnitud(mag, lines){
 					td2+=html('span',{"class":"limite"},"nivel "+limites[lKey]+": "+limite+" ");
 				}
 			}
-			trs+=html('tr',{"class":"NPI"}, td1+html('td',null, td2));
+			trs+=tr({"class":"NPI"}, td1+td(td2));
 		}
 	}
 	if(trs.length>0){
 		trs=tr(td({style:"text-align:center;background-color:lightGray"},'Valores de'+br()+'protección') + td(table(trs)));
-		var tr1=html('tr',null,
-				html('td',colorOverMag.verde,'Verde')+html('td',null,'<')+html('td',null,li.limite*.5)+html('td',{width:'20px'},'')+
-				html('td',colorOverMag.naranja,'Naranja')+html('td',null,'>=')+html('td',null,li.limite*.75)
+		var tr1=tr(
+				td(colorOverMag.verde,'Verde')+td('<')+td(li.limite*.5)+td({width:'20px'},' ')+
+				td(colorOverMag.naranja,'Naranja')+td('>=')+td(li.limite*.75)
 				);
-		var tr2=html('tr',null,
-				html('td',colorOverMag.amarillo,'Amarillo')+html('td',null,'>=')+html('td',null,li.limite*.5)+html('td',null,'')+
-				html('td',colorOverMag.rojo,'Rojo')+html('td',null,'>=')+html('td',null,li.limite)
+		var tr2=tr(
+				td(colorOverMag.amarillo,'Amarillo')+td('>=')+td(li.limite*.5)+td('')+
+				td(colorOverMag.rojo,'Rojo')+td('>=')+td(li.limite)
 				);
-		var pp=html('td',null,html('span',colorOverMag.verde,'Verde')+'<'+(li.limite*.5)+br()+html('span',colorOverMag.amarillo,'Amarillo')+'>='+(li.limite*.5)+br()+html('span',colorOverMag.naranja,'Naranja')+'>='+(li.limite*.75)+br()+html('span',colorOverMag.rojo,'Rojo')+'>='+(li.limite));
-		str+=br()+html('table',{"class":"tabla"}, trs) + br() + html('table',null, tr1+tr2); //html('tr',null,pp));
+		//var pp=html('td',null,html('span',colorOverMag.verde,'Verde')+'<'+(li.limite*.5)+br()+html('span',colorOverMag.amarillo,'Amarillo')+'>='+(li.limite*.5)+br()+html('span',colorOverMag.naranja,'Naranja')+'>='+(li.limite*.75)+br()+html('span',colorOverMag.rojo,'Rojo')+'>='+(li.limite));
+		str+=br()+table({"class":"tabla"}, trs) + br() + table(null, tr1+tr2); //html('tr',null,pp));
 	}
 	///
 	if(lines.length>0){
-		var linesOrder={"Máximos": ["maxValue", data.sortAscByMax(lines).slice(),mag.unidad], "Mínimos": ["minValue", data.sortAscByMin(lines).slice(),mag.unidad], "Media" : ["avgValue", data.sortAscByAvg(lines).slice(),mag.unidad], "Mediana":["medianValue", data.sortAscByMedian(lines).slice(),mag.unidad]}; //, "Nº de valores":["cntValues", data.sortAscByCntValues(lines).slice(),"valores"]};
+		var linesOrder={"Máximos": ["maxValue", data.sortAscByMax(lines).slice(),mag.unidad, "maxHour"], "Mínimos": ["minValue", data.sortAscByMin(lines).slice(),mag.unidad,"minHour"], "Media" : ["avgValue", data.sortAscByAvg(lines).slice(),mag.unidad], "Mediana":["medianValue", data.sortAscByMedian(lines).slice(),mag.unidad]}; //, "Nº de valores":["cntValues", data.sortAscByCntValues(lines).slice(),"valores"]};
 		trs="";
 		var divs="";
 		for(klo in linesOrder){
 			var property=linesOrder[klo][0];
 			var linesO=linesOrder[klo][1];
 			var sufijo=linesOrder[klo][2];
+			var hora=linesOrder[klo].length>3?linesOrder[klo][3]:null;
 			var max=linesO[0], min=linesO[linesO.length-1];
 			trs+= tr(
 				td({id:mag.abrv+klo, "class":"mini-boton", onclick:"clickValor('"+mag.abrv+klo+"')"},klo)+
 				td(data.estaciones[max.station].name+br()+spanColoreado(mag,max[property])+' '+sufijo)+
 				td(data.estaciones[min.station].name+br()+spanColoreado(mag,min[property])+' '+sufijo));
 				ids.valor.push(mag.abrv+klo);
-			var trs2=tr(td({colspan:2,style:"background-color: DeepSkyBlue;color:white; text-align:center;"},klo));
+			var trs2=tr(td({colspan:5,style:"background-color: DeepSkyBlue;color:white; text-align:center;"},klo));
 			for(var i in linesO){
 				var lin = linesO[i];
+				var h=data.lastIdxWithValue(lin.values);
 				trs2+=tr(
 					td(data.estaciones[lin.station].name)+
-					td(spanColoreado(mag, lin[property])+' '+sufijo));
+					td({style:"text-align:right"},spanColoreado(mag, lin[property]))+
+					td(' '+sufijo)+
+					td((hora!=null)?'a las ':' de 0h')+
+					td({style:"text-align:right"},(hora!=null)?(lin[hora]+"h"):("a "+h+"h")));
 			}
 			divs+=div({id:mag.abrv+klo+'tabla', "class":"oculto"}, table({"class":"tabla"},trs2));
 		}
 		str+=br()+table({"class":"tabla"},trs)+br()+divs;
 	}
-	str=html('div',{style:"padding:15px;text-transform:none;"}, str);
+	str=div({style:"padding:15px;text-transform:none;"}, str);
 	//info(str);
 	///
 	ids.mag.push(mag.abrv);
-	return html('div',{"class":"general",onclick:"clickMag('"+mag.abrv+"')"},mag.name+" ("+mag.abrv+")")+html('div',{id:mag.abrv, "class":"oculto"},str);
+	return div({"class":"general",onclick:"clickMag('"+mag.abrv+"')"},mag.name+" ("+mag.abrv+")")+div({id:mag.abrv, "class":"oculto"},str);
+}
+function lpad(str, padString, length) {
+    if(str==null) str="";
+    while (str.length < length)
+        str = padString + str;
+    return str;
 }
 function spanColoreado(mag, valor){
 	var v = Math.round(valor);
@@ -191,18 +203,31 @@ function toggle(el, este, xeste){
 		cambiaClass(el, xeste, este);
 }
 function clickValor(code){
-	//info(code);
-	cambiaTodos(ids.valor,'tabla','show','oculto');
-	cambiaTodos(ids.valor,'','mini-boton-selected','mini-boton');
+	var tabla=document.getElementById(code+'tabla');
+	if(tabla.classList.contains("show")){
+		toggle(tabla, "show", "oculto");
+		toggle(document.getElementById(code), 'mini-boton-selected','mini-boton');
+	}else{
+		cambiaTodos(ids.valor,'tabla','show','oculto');
+		cambiaTodos(ids.valor,'','mini-boton-selected','mini-boton');
 
-	toggle(document.getElementById(code), "mini-boton", "mini-boton-selected");
-	toggle(document.getElementById(code+'tabla'), "oculto", "show");
+		toggle(document.getElementById(code), "mini-boton", "mini-boton-selected");
+		toggle(tabla, "oculto", "show");
+		//gotoTop(tabla);
+	}
+}
+function gotoBottom(element){
+   element.scrollTop = element.scrollHeight - element.clientHeight;
+}
+function gotoTop(element){
+   element.scrollTop = 0;
 }
 function clickMag(codeMag){
 	var el=document.getElementById(codeMag);
 	var sw=el.classList.contains('show');
 	cambiaTodos(ids.mag,"",'show','oculto');
 	if(!sw)cambiaClass(el, "oculto", "show");
+	//gotoTop(el);
 }
 function infoContaminantes(){
 	var str="";
@@ -220,6 +245,7 @@ function infoContaminantes(){
 function p1Clicked(){
 	document.getElementById('p1').style.display = 'none';
 	document.getElementById('cuerpo').style.display = 'block';
+	document.getElementById('menu').style.display = 'none';
 	donde='p2';
 }
 function contaminantesClicked(){

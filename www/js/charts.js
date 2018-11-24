@@ -299,7 +299,7 @@ p.barChart = function(cont, filterTxt, lines){
   this.showContaminante(cont);
   this.showFilter(filterTxt);
   this.showMenu();
-  var lastIdx = data.maxIdxValueWithoutValue(lines)+1;
+  var lastIdx = data.maxIdxValueWithoutValue(lines);
   var limite = data.getLimite(data.magnitudes[contaminante.code]).limite;
   var maxValue=Math.max(data.maxValue(lines), limite);
   var margin = border,

@@ -51,7 +51,7 @@ var app = {
 ///////////////////////
 
 function info(str){
-	//console.log(str);
+	console.log(str);
 }
 
 ///////////////////////

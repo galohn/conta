@@ -37,18 +37,18 @@ var data =  {
 			 "09": {name: "Particulas <2.5 um",    abrv:"PM2,5", unidad:"µg/m3", mediaAnual:{limite: 25}, descripcion:"Partículas de diámetro aerodinámico inferior o igual a los 2,5 micras (polvo, cenizas, hollín, partículas metálicas, cemento y polen, entre otras). Su origen está principalmente en fuentes de carácter antropogénico como las emisiones de los vehículos diesel.", efectos:"Las partículas PM2,5 tienen efectos más severos sobre la salud que las más grandes, PM10. Asimismo, su tamaño hace que sean más ligeras y por eso, generalmente, permanecen por más tiempo en el aire. Ello no sólo prolonga sus efectos, sino que facilita su transporte por el viento a grandes distancias. Las partículas PM2,5, por tanto, se pueden acumular en el sistema respiratorio y están asociadas, cada vez con mayor consistencia científica, con numerosos efectos negativos sobre la salud, como el aumento de las enfermedades respiratorias y la disminución del funcionamiento pulmonar"},
 			 "10": {name: "Particulas <10 um",     abrv:"PM10",  unidad:"µg/m3", mediaDiaria:{limite: 50}, mediaAnual:{limite:40}, descripcion:"Partículas de diámetro aerodinámico inferior o igual a los 2,5 micras (polvo, cenizas, hollín, partículas metálicas, cemento y polen, entre otras). Pueden tener en su composición un importante componente de tipo natural", efectos:"La exposición prolongada o repetitiva a las PM10 puede provocar efectos nocivos en el sistema respiratorio de la persona, no obstante son menos perjudiciales que las PM2,5 ya que al tener un mayor tamaño, no logran atravesar los alveolos pulmonares, quedando retenidas en la mucosa que recubre las vías respiratorias superiores."},
 			 "12": {name: "Oxidos de Nitrogeno",   abrv:"NOx",   unidad:"µg/m3", descripcion:"Los óxidos de nitrógeno son un grupo de gases compuestos por óxido nítrico (NO) y dióxido de nitrógeno (NO2). El término NOX se refiere a la combinación de ambas sustancias", efectos:"Es una sustancia corrosiva para la piel y el tracto respiratorio. Una exposición prolongada puede afectar al sistema inmune y al pulmón, dando lugar a una menor resistencia frente a infecciones"},
-			 "14": {name: "Ozono Troposférico",    abrv:"O3",    unidad:"µg/m3", maximaDiaria: {objetivo: 120}, mediaHoraria: {alerta:240, informacion:180}},
-			 "19": {name: "Plomo",                 abrv:"Pb"},
+			 "14": {name: "Ozono Troposférico",    abrv:"O3",    unidad:"µg/m3", maximaDiaria: {objetivo: 120}, mediaHoraria: {alerta:240, informacion:180}, descripcion:"El ozono (O3) es un gas azulado, de olor irritante y muy reactivo.", efectos:"El ozono troposférico, derivado principalmente de las emisiones del tráfico, causa graves problemas sobre la salud humana, especialmente en días soleados."},
+			 "19": {name: "Plomo",                 abrv:"Pb",    descripcion:"El plomo es un metal altamente tóxico que está presente en gran parte de las actividades que desempeña el hombre", efectos:"El plomo es una sustancia tóxica que se va acumulando en el organismo afectando a diversos sistemas del organismo. No existe un nivel de exposición al plomo que pueda considerarse seguro."},
 			 "20": {name: "Tolueno",               abrv:"TOL",   unidad:"µg/m3", descripcion:"Tolueno es un líquido incoloro transparente con un olor característico. Es un buen solvente.", efectos:"Exposiciones repetidas durante unas semanas puede producir dolores de cabeza y somnolencia y puede alterar la capacidad para pensar claramente. La exposición diaria en el trabajo a cantidades moderadas puede producir cansancio, confusión, debilidad, sensación de embriaguez, pérdida de la memoria, náusea y pérdida del apetito"},
 			 "28": {name: "Cadmio",                abrv:"Cd",    descripcion:"Es un metal pesado, blando, blanco azulado, relativamente poco abundante. Es uno de los metales más tóxicos. Normalmente se encuentra en menas de zinc y se emplea especialmente en pilas.", efectos:""},
 			 "30": {name: "Benceno",               abrv:"BEN",   unidad:"µg/m3", mediaAnual:{limite:5}, descripcion:"El benceno, conocido también como benzol, es un líquido incoloro de olor dulce y es sumamente inflamable.", efectos:"La exposición puede producir letargo, mareo, aceleración del latido del corazón, dolor de cabeza, temblores, confusión y pérdida del conocimiento. En la mayoría de los casos, los efectos desaparecerán cuando la exposición termina y la persona empieza a respirar aire fresco."},
-			 "35": {name: "Etilbenceno",           abrv:"EB",    unidad:"µg/m3"},
-			 "37": {name: "Metaxileno",            abrv:"m-Xil", unidad:"µg/m3"},
-			 "38": {name: "Paraxileno",            abrv:"PXY",   unidad:"µg/m3"},
-			 "39": {name: "Ortoxileno",            abrv:"OXY",   unidad:"µg/m3"},
-			 "42": {name: "Hidrocarburos totales(hexano)", abrv:"TCH", unidad:"mg/m3"},
-			 "43": {name: "Metano",                abrv:"Ch4",   unidad:""},
-			 "44": {name: "Hidrocarburos no metanicos (hexano)", abrv:"NMHC", unidad:"mg/m3"}},
+			 "35": {name: "Etilbenceno",           abrv:"EB",    unidad:"µg/m3", descripcion:"El etilbenceno es un líquido incoloro que se encuentra en numerosos productos entre los que se incluyen la gasolina y pinturas.", efectos:"Respirar niveles muy altos de etilbenceno produce mareo e irritación de los ojos y la garganta."},
+			 "37": {name: "Metaxileno",            abrv:"m-Xil", unidad:"µg/m3", descripcion:"Líquido incoloro de olor característico", efectos:"Vértigo. Somnolencia. Dolor de cabeza y náuseas."},
+			 "38": {name: "Paraxileno",            abrv:"PXY",   unidad:"µg/m3", descripcion:"En condiciones normales, son líquidos incoloros e inflamables con un característico olor parecido al tolueno.", efectos:"En contacto con la piel y los ojos, este compuesto puede provocar irritación, enrojecimiento y dolores agudos."},
+			 "39": {name: "Ortoxileno",            abrv:"OXY",   unidad:"µg/m3", descripcion:"Se trata de líquidos incoloros e inflamables con un característico olor parecido al tolueno.", efectos:"Los xilenos son nocivos. Sus vapores pueden provocar dolor de cabeza, náuseas y malestar general."},
+			 "42": {name: "Hidrocarburos totales(hexano)", abrv:"TCH", unidad:"mg/m3", descripcion:"El n-hexano es un sustancia química elaborada a partir del petróleo crudo. El n-hexano puro es un líquido incoloro con un olor ligeramente desagradable. Se evapora fácilmente en el aire y se disuelve muy poco en el agua.", efectos:"Esta sustancia puede causar efectos sobre: el sistema nervioso, generar irritación en las vías respiratorias, producir vértigo, somnolencia, dolor de cabeza, dificultad al respirar."},
+			 "43": {name: "Metano",                abrv:"Ch4",   unidad:"", descripcion:"El metano es uno de los principales gases del efecto invernadero, su efecto negativo sobre el calentamiento del planeta es 21 veces mayor que el del dióxido de carbono. El metano se produce por fuentes naturales.", efectos:"El metano no es tóxico y no es peligroso si se inhala en pequeñas cantidades; sin embargo, si una gran cantidad de gas natural o metano desplaza el aire, la falta de oxígeno podría provocar asfixia."},
+			 "44": {name: "Hidrocarburos no metanicos (hexano)", abrv:"NMHC", unidad:"mg/m3", descripcion:"El n-hexano es un sustancia química elaborada a partir del petróleo crudo. El n-hexano puro es un líquido incoloro con un olor ligeramente desagradable. Se evapora fácilmente en el aire y se disuelve muy poco en el agua.", efectos:"Esta sustancia puede causar efectos sobre: el sistema nervioso, generar irritación en las vías respiratorias, producir vértigo, somnolencia, dolor de cabeza, dificultad al respirar."}},
 onLoad:[],
 getLimite : function(magnitud){
 	var valor=null;
@@ -305,7 +305,7 @@ filterByMagnitude : function(inMagnitude, lines){
 	return linesInMagnitude;
 },
 
-lastIdxWithoutValue : function(values){
+lastIdxWithValue : function(values){
 	var i;
 	for(i=values.length-1; i>=0 && values[i]==-1; i--){}; // Aqui quitamos las ultimas horas sin valor
 	return i;
@@ -314,16 +314,16 @@ lastIdxWithoutValue : function(values){
 maxIdxValueWithoutValue: function(lines){
 	var max=0;
 	for(idxLine in lines){
-		var idx=this.lastIdxWithoutValue(lines[idxLine].values);
+		var idx=this.lastIdxWithValue(lines[idxLine].values);
 		if(idx>max) max=idx;
 	}
-	return max;
+	return max+1;
 },
 
 removeLastDataWithoutValue: function(valuesIn){
 	var values=[];
 	for(var i=0; i<valuesIn.length; i++) values.push(valuesIn[i]);
-	values.splice(this.lastIdxWithoutValue(values)); // Aqui quitamos las ultimas horas sin valor
+	values.splice(this.lastIdxWithValue(values)+1); // Aqui quitamos las ultimas horas sin valor
 	return values;
 },
 
