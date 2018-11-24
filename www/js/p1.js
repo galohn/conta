@@ -138,6 +138,7 @@ function infoMagnitud(mag, lines){
 	}
 	///
 	if(lines.length>0){
+		str+=br()+div(sep,"Valores de las estaciones de Madrid hoy");
 		var linesOrder={"Máximos": ["maxValue", data.sortAscByMax(lines).slice(),mag.unidad, "maxHour"], "Mínimos": ["minValue", data.sortAscByMin(lines).slice(),mag.unidad,"minHour"], "Media" : ["avgValue", data.sortAscByAvg(lines).slice(),mag.unidad], "Mediana":["medianValue", data.sortAscByMedian(lines).slice(),mag.unidad]}; //, "Nº de valores":["cntValues", data.sortAscByCntValues(lines).slice(),"valores"]};
 		trs="";
 		var divs="";
