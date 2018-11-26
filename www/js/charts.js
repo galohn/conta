@@ -10,13 +10,13 @@ var swCallAjax=true;
 var swDraw=false;
 var border=24;
 var type={area:0, line:1, bar:2, pie:3};
-var typeFilter={max:{txt:"valor mas alto", fn:data.sortAscByMax},
-				min:{txt:"valor mas bajo", fn:data.sortDescByMax},
-				avg:{txt:"media mas alta", fn: data.sortAscByAvg},
-				cnt:{txt:"mas valores", fn:data.sortAscByCntValues},
-				median:{txt:"mediana mas alta", fn:data.sortAscByMedian}};
+var typeFilter={max:{txt:"valor máximo", fn:[data.sortAscByMax,data.sortDescByMax]},
+				min:{txt:"valor mínimo", fn:[data.sortAscByMin,data.sortDescByMin]},
+				avg:{txt:"media", fn:[data.sortAscByAvg,data.sortDescByAvg]},
+				cnt:{txt:"nº mediciones", fn:[data.sortAscByCntValues,data.sortDescByCntValues]},
+				median:{txt:"mediana", fn:[data.sortAscByMedian,data.sortDescByMedian]}};
 var typeChart=type.area;
-var typeFilterSelected=typeFilter.max;
+var typeFilterSelected={tf: typeFilter.max, idxFn:0, cnt:3};
 var textSizeSlider, extVName;
 var font, menu={}, contaminante={}, filterType={};
 
@@ -66,9 +66,9 @@ p.draw = function() {
 		if(lines.length>0){
 			var lines2=data.removeEmptyLines(data.filterByMagnitude(contaminante.code, lines));
 			//lines2=data.sortAscByMax(lines2).slice(-3);
-			lines2=typeFilterSelected.fn(lines2).slice(-3);
+			lines2=typeFilterSelected.tf.fn[typeFilterSelected.idxFn](lines2).slice(-1*typeFilterSelected.cnt);
 			var magnitude=data.magnitudes[contaminante.code].name;
-			var str = '3 con '+typeFilterSelected.txt;
+			var str = typeFilterSelected.cnt+' con '+typeFilterSelected.tf.txt+' '+(typeFilterSelected.idxFn==0?"mas alto":"mas bajo");
 			if     (type.pie ==typeChart) p.pieChart(magnitude, str, lines2);
 			else if(type.area==typeChart) p.areaLineChart(magnitude, str, lines2, true);
 			else if(type.line==typeChart) p.areaLineChart(magnitude, str, lines2, false);
@@ -125,10 +125,11 @@ p.doOnMousePress = function () {
 			if(data.filterByMagnitude(mag, lines).length>0){
 				var dentro=data.magnitudes[mag].abrv+" : "+data.magnitudes[mag].name;
 				//str+='<div onclick="'+extVName+'.setMagnitud(\''+mag+'\');" style="background-color:'+colors[i++]+'">'+data.magnitudes[mag].name+'</div>'
-				str+=html('div',{onclick: extVName+'.setMagnitud(\''+mag+'\');', style:"background-color:DarkSalmon"},dentro);
+				//str+=html('div',{onclick: extVName+'.setMagnitud(\''+mag+'\');', style:"background-color:DarkSalmon"},dentro);
+				str+=div({onclick: extVName+'.setMagnitud(\''+mag+'\');', "class":"mini-boton"},dentro);
 			}
 		}
-		str='<div id="myDropdown" class="show">'+str+'</div>';
+		str=div({id:"myDropdown",'class':"show"},str);
 		
 		var menuMag=document.getElementById('menu');
 		menuMag.innerHTML=str;
@@ -137,13 +138,23 @@ p.doOnMousePress = function () {
 	}
 	if (!resized && p.mouseIntersectWith(filterType)){
 		resized=true;
-		var str='', i=0;
-		for(idx in typeFilter){
-			var tf = typeFilter[idx];
+		var trs='';
+		for(var attr in typeFilter){
+			var tf = typeFilter[attr];
 			//str+='<div onclick="'+extVName+'.setTypeFilter(\''+idx+'\');" style="background-color:'+colors[i++]+'">'+tf.txt+'</div>'
-			str+=html('div',{onclick: extVName+'.setTypeFilter(\''+idx+'\');', style:"background-color:DarkSalmon"}, tf.txt);
+			//str+=html('div',{onclick: extVName+'.setTypeFilter(\''+idx+'\');', style:"background-color:DarkSalmon"}, tf.txt);
+			trs+=tr(
+					td({style:backColor('DarkSalmon')}, tf.txt)+
+					td(p.attrsTypeFilter(attr, 0), '+ Alto')+
+					td(p.attrsTypeFilter(attr, 1), '+ Bajo')
+				);
 		}
-		str='<div id="myDropdown" class="show">'+str+'</div>';
+		var tds=""
+		for(var i=0; i<6; i++) tds+=td(p.attrsCnt(i+1),i+1);
+		var str=table({width:"96%"},tr(td({colspan:3},"Selecciona función:"))+trs)+
+			br()+table({width:"96%"},tr(td({colspan:6},'Selecciona nº valores:'))+tr(tds))+
+		    br()+div({onclick:extVName+".setTypeFilter()",style:backColor('green')+textAlign(Center)},"Hecho!");
+		str=div({id:"myDropdown",'class':"show"},div(str));
 		
 		var menuMag=document.getElementById('menu');
 		menuMag.innerHTML=str;
@@ -152,9 +163,31 @@ p.doOnMousePress = function () {
 	}
 	if(resized) p.windowResized();
 }
-
-p.setTypeFilter = function(code){
-	typeFilterSelected=typeFilter[code];
+p.attrsTypeFilter=function(keyName, zeroOrOne){
+	var myClass=typeFilterSelected.tf==typeFilter[keyName]&&typeFilterSelected.idxFn==zeroOrOne?"mini-boton-selected":"mini-boton";
+	return {id:"tf"+keyName+zeroOrOne, "class":myClass, onclick: extVName+'.setTypeFilterFn(\''+keyName+'\','+zeroOrOne+');'}
+}
+p.attrsCnt=function(i){
+	var myClass=typeFilterSelected.cnt==i?"mini-boton-selected":"mini-boton";
+	return {id:'cnt'+i,"class":myClass,style:textAlign(Center),onclick:extVName+'.setCnt('+i+')'};
+}
+p.setCnt = function(cnt){
+	var ids=['cnt1','cnt2','cnt3','cnt4','cnt5','cnt6'];
+	cambiaTodos(ids,'',"mini-boton-selected","mini-boton");
+	toggle(document.getElementById('cnt'+cnt), "mini-boton", "mini-boton-selected");
+	typeFilterSelected.cnt=cnt;
+}
+p.setTypeFilterFn = function(code,idx){
+	info('setTypeFilter code='+code+" idx="+idx);
+	typeFilterSelected.tf=typeFilter[code];
+	typeFilterSelected.idxFn=idx;
+	//
+	var ids=[];
+	for(var attr in typeFilter) for(var i in [0,1]) ids.push("tf"+attr+i);
+	cambiaTodos(ids,'',"mini-boton-selected","mini-boton");
+	toggle(document.getElementById("tf"+code+idx), "mini-boton", "mini-boton-selected");
+}
+p.setTypeFilter = function(){
 	p.windowResized();
 	document.getElementById('menu').style.display = 'none';
 	document.getElementById('cuerpo').style.display = 'block';
@@ -368,7 +401,7 @@ p.drawLimite = function(limite, maxValue, margin, w, yMin, yMax, unidad){
 		p.fill('red');
 		p.noStroke();
 		var str='Límite: '+limite+' '+unidad;
-		if(value < yMax*1.2){
+		if(value < yMax*2){ // 1.2 original
 			var bounds = font.textBounds(str, margin, value, this.getTextSize());
 			margin = w - bounds.w + margin;
 			value+=(2+bounds.h);

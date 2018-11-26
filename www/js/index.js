@@ -65,20 +65,26 @@ var myBarP5 = new p5(sketch, 'barChart').setBar();
 var lines = []; //data.getLines();
 data.onLoad.push(function(){
 	lines=data.getLines();
-	
+
 	myPieP5.setLines(lines);
-myBarP5.setLines(lines);
-//myLineP5.setLines(lines);
-//myAreaP5.setLines(lines);
+	myBarP5.setLines(lines);
+	//myLineP5.setLines(lines);
+	//myAreaP5.setLines(lines);
 
-myPieP5.setExtVName("myPieP5");
-myBarP5.setExtVName("myBarP5");
-//myAreaP5.setExtVName("myAreaP5");
-//myLineP5.setExtVName("myLineP5");
+	myPieP5.setExtVName("myPieP5");
+	myBarP5.setExtVName("myBarP5");
+	//myAreaP5.setExtVName("myAreaP5");
+	//myLineP5.setExtVName("myLineP5");
 
-p1Init();
+	p1Init();
 
-document.getElementById('titulo').innerHTML=lines[0].day;
+	var fecha=lines[0].day;
+	var anio=fecha.substring(0,4);
+	var mes=parseInt(fecha.substring(4,6));
+	var dia=fecha.substring(6);
+	const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+	document.getElementById('titulo').innerHTML=html('span',{style:"text-transform:none;"},"Datos del "+dia+"-"+monthNames[mes-1]+"-"+anio);
+
 });
 
 data.getLines();

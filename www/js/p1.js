@@ -23,7 +23,7 @@ function mapX(v){
 function mapY(v){
 	return v * perc();
 }
-var colorOverMag={gray:{style:"background-color:gray; color: white"},rojo:{style:"background-color:red; color: white"}, naranja:{style:"background-color:orange; color: black"}, amarillo:{style:"background-color:yellow; color: black"}, verde:{style:"background-color:green; color: white"}};
+var colorOverMag={gray:{style:backColor('gray')+"color: white"},rojo:{style:backColor('red')+"color: white"}, naranja:{style:backColor('orange')+"color: black"}, amarillo:{style:backColor('yellow')+"color: black"}, verde:{style:backColor('green')+"color: white"}};
 function getOverColour(mag, value){
 	var limite = data.getLimite(mag);
 	var overflow = value/limite.limite;
@@ -69,7 +69,7 @@ function getCuadro(){
 		if(data.getLimite(magn).limite!=-1){
 			magn.code=key;
 			mag.push(magn);
-			fila1+=td({style:"text-align: center"},magn.abrv);
+			fila1+=td({style:textAlign(Center)},magn.abrv);
 		}
 	}
 	//info('mag:'); info(mag);
@@ -85,7 +85,7 @@ function getCuadro(){
 			var value=data.getLimite(mag[m]).limite;
 			var linesByZoneAndMag=data.filterByMagnitude(mag[m].code, linesZone);
 			var style = getStyleLines(linesByZoneAndMag);
-			fila+=td({style:"background-color:"+style}, br());
+			fila+=td({style:backColor(style)}, br());
 		}
 		fila=td({width:"8%"},keyZ)+fila;
 		filas+=tr(fila);
@@ -98,6 +98,9 @@ function tr(attr,content){return !!content?html('tr',attr,content):html('tr',nul
 function td(attr,content){return !!content?html('td',attr,content):html('td',null,attr);}
 function table(attr,content){return !!content?html('table',attr,content):html('table',null,attr);}
 function div(attr,content){return !!content?html('div',attr,content):html('div',null,attr);}
+const Justify="justify", Center="center", Right="right";
+function textAlign(align){return "text-align:"+align+";";}
+function backColor(color){return "background-color:"+color+";";}
 
 function infoMagnitud(mag, lines){
 	var valor=null;
@@ -105,31 +108,33 @@ function infoMagnitud(mag, lines){
 	var campos={maximaDiaria:"Máxima diaria", mediaHoraria:"Media horaria", mediaDiaria:"Media diaria", mediaAnual:"Media anual"};
 	var limites={limite:"Límite", critico:"Crítico", alerta:"de alerta", informacion:"de información", objetivo:"objetivo"};
 	var trs="";
-	var sep={style:"color: white; background-image: linear-gradient(to right, gray, white);"};
-	var str=div(sep,"Descripción")+div({style:"text-align:justify;"},mag.descripcion);
+	var sep={style:"color: white; background-image: linear-gradient(to right, gray, lightGray);"};
+	var str=div(sep,"Descripción")+div({style:textAlign(Justify)},mag.descripcion);
 	str+=div(sep,"Efectos")+div(mag.efectos);
 	for(var cKey in campos){
-		var td1="";
+		var td1=""; // Calculo de los valores de proteccion
 		if(cKey in mag){
 			var campo=mag[cKey];
 			td1=td({"class":"valor"},campos[cKey]);
-			var td2="";
+			var td2="", td3="";
 			for(lKey in limites){
 				if(lKey in campo){
 					var limite=campo[lKey];
-					td2+=html('span',{"class":"limite"},"nivel "+limites[lKey]+": "+limite+" ");
+					if(td2.length>0) {td2+=br(); td3+=br();}
+					td2+=html('span',{"class":"limite"},"nivel "+limites[lKey]);
+					td3+=""+limite;
 				}
 			}
-			trs+=tr({"class":"NPI"}, td1+td(td2));
+			trs+=tr({"class":"NPI"}, td1+td(td2)+td({style:textAlign(Right)},td3));
 		}
 	}
 	if(trs.length>0){
-		trs=tr(td({style:"text-align:center;background-color:lightGray"},'Valores de'+br()+'protección') + td(table(trs)));
-		var tr1=tr(
+		trs=tr(td({style:textAlign(Center)+backColor('lightGray')},'Valores de'+br()+'protección') + td(table(trs)));
+		var tr1=tr( td({rowspan:2}, "Colores")+td({width:'10px'},' ')+
 				td(colorOverMag.verde,'Verde')+td('<')+td(li.limite*.5)+td({width:'20px'},' ')+
 				td(colorOverMag.naranja,'Naranja')+td('>=')+td(li.limite*.75)
 				);
-		var tr2=tr(
+		var tr2=tr( td()+
 				td(colorOverMag.amarillo,'Amarillo')+td('>=')+td(li.limite*.5)+td('')+
 				td(colorOverMag.rojo,'Rojo')+td('>=')+td(li.limite)
 				);
@@ -138,8 +143,11 @@ function infoMagnitud(mag, lines){
 	}
 	///
 	if(lines.length>0){
-		str+=br()+div(sep,"Valores de las estaciones de Madrid hoy");
-		var linesOrder={"Máximos": ["maxValue", data.sortAscByMax(lines).slice(),mag.unidad, "maxHour"], "Mínimos": ["minValue", data.sortAscByMin(lines).slice(),mag.unidad,"minHour"], "Media" : ["avgValue", data.sortAscByAvg(lines).slice(),mag.unidad], "Mediana":["medianValue", data.sortAscByMedian(lines).slice(),mag.unidad]}; //, "Nº de valores":["cntValues", data.sortAscByCntValues(lines).slice(),"valores"]};
+		str+=br()+div(sep,"Valores de las estaciones de Madrid");
+		var linesOrder={"Máximos": ["maxValue", data.sortAscByMax(lines).slice(),mag.unidad, "maxHour"],
+						"Mínimos": ["minValue", data.sortAscByMin(lines).slice(),mag.unidad,"minHour"],
+						"Media" : ["avgValue", data.sortAscByAvg(lines).slice(),mag.unidad],
+						"Mediana":["medianValue", data.sortAscByMedian(lines).slice(),mag.unidad]}; //, "Nº de valores":["cntValues", data.sortAscByCntValues(lines).slice(),"valores"]};
 		trs="";
 		var divs="";
 		for(klo in linesOrder){
@@ -153,16 +161,16 @@ function infoMagnitud(mag, lines){
 				td(data.estaciones[max.station].name+br()+spanColoreado(mag,max[property])+' '+sufijo)+
 				td(data.estaciones[min.station].name+br()+spanColoreado(mag,min[property])+' '+sufijo));
 				ids.valor.push(mag.abrv+klo);
-			var trs2=tr(td({colspan:5,style:"background-color: DeepSkyBlue;color:white; text-align:center;"},klo));
+			var trs2=tr(td({colspan:5,style:backColor('DeepSkyBlue')+"color:white;"+textAlign(Center)},klo));
 			for(var i in linesO){
 				var lin = linesO[i];
 				var h=data.lastIdxWithValue(lin.values);
 				trs2+=tr(
 					td(data.estaciones[lin.station].name)+
-					td({style:"text-align:right"},spanColoreado(mag, lin[property]))+
+					td({style:textAlign(Right)},spanColoreado(mag, lin[property]))+
 					td(' '+sufijo)+
 					td((hora!=null)?'a las ':' de 0h')+
-					td({style:"text-align:right"},(hora!=null)?(lin[hora]+"h"):("a "+h+"h")));
+					td({style:textAlign(Right)},(hora!=null)?(lin[hora]+"h"):("a "+h+"h")));
 			}
 			divs+=div({id:mag.abrv+klo+'tabla', "class":"oculto"}, table({"class":"tabla"},trs2));
 		}
@@ -172,7 +180,8 @@ function infoMagnitud(mag, lines){
 	//info(str);
 	///
 	ids.mag.push(mag.abrv);
-	return div({"class":"general",onclick:"clickMag('"+mag.abrv+"')"},mag.name+" ("+mag.abrv+")")+div({id:mag.abrv, "class":"oculto"},str);
+	return	div({id:mag.abrv+"1","class":"general",onclick:"clickMag('"+mag.abrv+"')"},mag.name+" ("+mag.abrv+")")+
+			div({id:mag.abrv, "class":"oculto", style:"font-size: 1.3em;"},str);
 }
 function lpad(str, padString, length) {
     if(str==null) str="";
@@ -214,7 +223,8 @@ function clickValor(code){
 
 		toggle(document.getElementById(code), "mini-boton", "mini-boton-selected");
 		toggle(tabla, "oculto", "show");
-		//gotoTop(tabla);
+		gotoBottom(tabla);
+		gotoTop(tabla);
 	}
 }
 function gotoBottom(element){
@@ -227,8 +237,10 @@ function clickMag(codeMag){
 	var el=document.getElementById(codeMag);
 	var sw=el.classList.contains('show');
 	cambiaTodos(ids.mag,"",'show','oculto');
-	if(!sw)cambiaClass(el, "oculto", "show");
-	//gotoTop(el);
+	if(!sw){cambiaClass(el, "oculto", "show");
+		gotoBottom(el);
+		gotoTop(document.getElementById(codeMag+"1"));
+	}
 }
 function infoContaminantes(){
 	var str="";

@@ -10,17 +10,17 @@ var data =  {
 			"28079009": {name:"Pza. Luca de Tena", color:'Mint'},
 			"28079010": {name:"Cuatro Caminos", color:'Gold'},	"28079038": {name:"Cuatro Caminos", color:'Gold'},
 			"28079011": {name:"Av. Ramón y Cajal", color:'Olive'}, "28079012": {name:"Pza. Manuel Becerra", color:'DarkGoldenRod'},
-			"28079013": {name:"Vallecas", color:'Coral'}, "28079040": {name:"Vallecas", color:'Coral'},
+			"28079013": {name:"Vallecas", color:'Coral'}, "28079040": {name:"Vallecas", color:'Coral'}, "28079054": {name:"Ensanche Vallecas", color:'Coral'},
 			"28079014": {name:"Pza. Fdez. Ladreda", color:'CornflowerBlue'}, "28079015": {name:"Pza. Castilla", color:'DarkSalmon'},
 			"28079016": {name:"Arturo Soria", color: 'DeepSkyBlue'}, "28079017": {name:"Villaverde Alto", color:'Fuchsia'},
 			"28079018": {name:"c/Farolillo", color:'FireBrick'}, "28079019": {name:"Huerta Castañeda", color:'IndianRed'}, "28079020": {name:"Moratalaz", color:'LawnGreen'},
 			"28079036": {name:"Moratalaz II", color:'LawnGreen'}, "28079021": {name:"Pza. Cristo Rey", color:'LightCoral'}, "28079022": {name:"Pº. Pontones", color:'LightPink'},
-			"28079023": {name:"Final c/Alcalá", color:''},
+			"28079023": {name:"Final c/Alcalá", color:'DarkKhaki'},
 			"28079024": {name:"Casa de Campo", color:'LimeGreen'}, "28079025": {name:"Santa Eugenia", color:'LightSeaGreen'},
-			"28079026": {name:"Urb. Embajada (Barajas)", color:'Magenta'}, "28079027": {name:"Barajas", color:'MediumBlue'},
+			"28079026": {name:"Urb. Embajada (Barajas)", color:'Magenta'}, "28079055": {name:"Urb. Embajada (Barajas)", color:'Magenta'},
+			"28079027": {name:"Barajas", color:'MediumBlue'},
 			"28079047": {name:"Méndez Álvaro", color:'MediumSpringGreen'}, "28079048": {name:"Pº. Castellana Alta", color:'OrangeRed'}, "28079049": {name:"Retiro", color:'Orchid'},
 			"28079050": {name:"Pza. Castilla", color:'DarkSalmon'},
-			"28079054": {name:"Ensanche Vallecas", color:'Coral'}, "28079055": {name:"Urb. Embajada (Barajas)", color:'Magenta'},
 			"28079056": {name:"Pza. Fdez. Ladreda", color:'CornflowerBlue'}, "28079057": {name:"Sanchinarro", color:'YellowGreen'},
 			"28079058": {name:"El Pardo", color:'Peru'}, "28079059": {name:"Parque Juan Carlos I", color:'Violet'},
 			"28079086": {name:"Tres Olivos", color:'Turquoise'},"28079060": {name:"Tres Olivos", color:'Turquoise'}},
@@ -205,6 +205,16 @@ sortAscByMin : function(lines){
 	info(lines.length+' lines sorted asc by min');
 	return x;
 },
+sortDescByMin : function(lines){
+	// Ordena de menor a mayor según su mínimo valor en el dia
+	var x=lines.sort(function(a, b) {
+		var v1 = a.minHour==-1?-1:a.values[a.minHour];
+		var v2 = b.minHour==-1?-1:b.values[b.minHour];
+		return v2 - v1;
+	});
+	info(lines.length+' lines sorted desc by min');
+	return x;
+},
 
 sortAscByMax : function(lines){
 	// Ordena de menor a mayor según su máximo valor en el dia
@@ -237,6 +247,15 @@ sortAscByAvg : function(lines){
 	return x;
 },
 
+sortDescByAvg : function(lines){
+	// Ordena de menor a mayor según su máximo valor en el dia
+	var x=lines.sort(function(a, b) {
+		return b.avgValue - a.avgValue;
+	});
+	info(lines.length+' lines sorted desc by avg');
+	return x;
+},
+
 sortAscByCntValues : function(lines){
 	// Ordena de menor a mayor según su máximo valor en el dia
 	var x=lines.sort(function(a, b) {
@@ -246,12 +265,30 @@ sortAscByCntValues : function(lines){
 	return x;
 },
 
+sortDescByCntValues : function(lines){
+	// Ordena de menor a mayor según su máximo valor en el dia
+	var x=lines.sort(function(a, b) {
+		return b.cntValues - a.cntValues;
+	});
+	info(lines.length+' lines sorted desc by cntValues');
+	return x;
+},
+
 sortAscByMedian : function(lines){
 	// Ordena de menor a mayor según su máximo valor en el dia
 	var x=lines.sort(function(a, b) {
 		return a.medianValue - b.medianValue;
 	});
 	info(lines.length+' lines sorted asc by median');
+	return x;
+},
+
+sortDescByMedian : function(lines){
+	// Ordena de menor a mayor según su máximo valor en el dia
+	var x=lines.sort(function(a, b) {
+		return b.medianValue - a.medianValue;
+	});
+	info(lines.length+' lines sorted desc by median');
 	return x;
 },
 
