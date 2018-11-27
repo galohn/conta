@@ -18,7 +18,7 @@ var typeFilter={max:{txt:"valor máximo", fn:[data.sortAscByMax,data.sortDescByM
 var typeChart=type.area;
 var typeFilterSelected={tf: typeFilter.max, idxFn:0, cnt:3};
 var textSizeSlider, extVName;
-var font, menu={}, contaminante={}, filterType={};
+var font, menu={}, contaminante={}, filterType={}, botonClose={}, botonSuma={visible:false}, doubleSize=false;
 
 p.setExtVName = function(name){ extVName=name; }
 
@@ -38,7 +38,7 @@ p.setup = function() {
   //p.strokeWeight(1);
   //noLoop();  // Run once and stop
   //p.callAjax();
-  textSizeSlider = p.createSlider(10, 72, 16);
+  textSizeSlider = p.createSlider(8, 40, 16);
   textSizeSlider.position(25, canva.y);
   //info(textSizeSlider);
   textSizeSlider.changed(function(){p.windowResized();});
@@ -51,12 +51,15 @@ p.getTextSize = function(){
 }
 
 p.windowResized = function () {
-  p.resizeCanvas(window.innerWidth, window.innerHeight/2.3);
+  p.resizeCanvas(window.innerWidth, (window.innerHeight/2.3)*(doubleSize?2:1));
   lastLinesLength=lines.length-1;
   this.setMenu();
   //info('lastLinesLength=lines.length-1'+lastLinesLength+' '+lines.length);
 }
-
+p.setDoubleSize=function(sw){
+	doubleSize=sw;
+	p.windowResized();
+}
 p.draw = function() {
 	//info('swCallAjax='+swCallAjax+' swDraw='+swDraw+' lines='+lines.length);
 	if(lastLinesLength!=lines.length){
@@ -161,6 +164,15 @@ p.doOnMousePress = function () {
 		menuMag.style.display = 'block';
 		document.getElementById('cuerpo').style.display = 'none';
 	}
+	info(botonClose);
+	if (!resized && p.mouseIntersectWith(botonClose.rect)){
+		info('boton close');
+		if('fn' in botonClose) botonClose.fn();
+	}
+	if (!resized && p.mouseIntersectWith(botonSuma.rect)){
+		info('boton suma');
+		if('fn' in botonSuma) botonSuma.fn();
+	}
 	if(resized) p.windowResized();
 }
 p.attrsTypeFilter=function(keyName, zeroOrOne){
@@ -200,7 +212,7 @@ p.setMagnitud = function(code){
 }
 
 p.mouseIntersectWith = function(anObject){
-	return p.mouseX>=anObject.x0 && p.mouseY>=anObject.y0 && p.mouseX<=anObject.x1 && p.mouseY<=anObject.y1;
+	return (!!anObject) && ('x0' in anObject) && p.mouseX>=anObject.x0 && p.mouseY>=anObject.y0 && p.mouseX<=anObject.x1 && p.mouseY<=anObject.y1;
 }
 
 p.setArea = function(){ typeChart=type.area; return this;}
@@ -235,6 +247,43 @@ p.showContaminante=function(cont){
   //p.text(title, 10-1, (border*2)-1); y0 es arriba e y1 es abajo
   p.fill('white');
   p.text(cont, 10+5, contaminante.y1-4); //border*1.5+4);
+}
+
+p.setAddBoton=function(fn){
+	botonSuma.fn=fn;
+}
+p.setVisibleAddBoton=function(sw){
+	botonSuma.visible=sw;
+}
+p.setCloseBoton=function(fn){
+	botonClose.fn=fn;
+}
+p.showClose=function(){
+	if('fn' in botonClose){
+		p.push();
+		var pad=10, size=14, x0=p.width-menu.width-pad-size;
+		p.fill('gray');
+		p.rect(x0, pad, size, size);
+		p.stroke('white');
+		p.line(x0, pad,      x0+size, pad+size);
+		p.line(x0, pad+size, x0+size, pad);
+		botonClose.rect={x0:x0, y0:pad, x1:x0+size, y1: pad+size};
+		p.pop();
+	}
+}
+
+p.showBotonSuma=function(){
+	if('fn' in botonSuma && botonSuma.visible){
+		p.push();
+		var pad=10, size=14, x0=p.width-menu.width-pad-size, y0=p.height-pad-size;
+		p.fill('gray');
+		p.rect(x0, y0, size, size);
+		p.stroke('white');
+		p.line(x0, y0+size/2, x0+size, y0+size/2);
+		p.line(x0+size/2, y0, x0+size/2, y0+size);
+		botonSuma.rect={x0:x0, y0:y0, x1:x0+size, y1: y0+size};
+		p.pop();
+	}
 }
 
 p.showFilter=function(filterTxt){ // origin [0, 0] is the coordinate in the upper left of the window
@@ -292,6 +341,8 @@ p.pieChart = function(cont, filterTxt, lines) {
 	this.shadowText(str, x0-20, y0, 'white', 'black');
     lastAngle += p.radians(angles[i]);
   }
+  p.showClose();
+  p.showBotonSuma();
 }
 
 p.isPointInsideArc = function (){
@@ -388,6 +439,9 @@ p.barChart = function(cont, filterTxt, lines){
   p.removeLabels(labels);
   for(var i=0; i<labels.length; i++) p.text(labels[i].txt, labels[i].x, labels[i].y);
   p.pop();
+
+  p.showClose();
+  p.showBotonSuma();
 }
 
 p.drawLimite = function(limite, maxValue, margin, w, yMin, yMax, unidad){
@@ -512,6 +566,8 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 		//info('serie: '+txt+': '+x+', '+y);
 	}
 	//
+  p.showClose();
+  p.showBotonSuma();
 }
 
 p.drawCheck = function(x, y, width, height, selected){

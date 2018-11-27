@@ -6,11 +6,14 @@ var so={name:'Suroeste', txts:[{txt:'Suroeste',     x:160,y:465}],coords:[{x:281
 var se={name:'Sureste', txts:[{txt:'Sureste',      x:360,y:480}],coords:[{x:320, y:555},{x:320, y:476},{x:311, y:437},{x:327, y:449},{x:334, y:445},{x:334, y:436},{x:347, y:429},{x:364, y:390},{x:380, y:396},{x:409, y:401},{x:426, y:398},{x:457, y:412},{x:491, y:434},{x:509, y:427},{x:532, y:425},{x:551, y:429},{x:541, y:440},{x:519, y:435},{x:502, y:499},{x:463, y:549},{x:468, y:566},{x:433, y:570},{x:418, y:560},{x:403, y:558},{x:379, y:537},{x:333, y:553},{x:320, y:555}]};
 
 var bcr=null;
+function calculateBcr(){
+	bcr=document.getElementById('svg').getBoundingClientRect();
+}
 function getBcr(){
 	//document.getElementById('svg').style.height=window.innerHeight/3;
 	//info(document.getElementById('svg'));
 	//return document.getElementById('svg').getBoundingClientRect();
-	if(bcr==null)bcr=document.getElementById('svg').getBoundingClientRect();
+	if(bcr==null)calculateBcr();
 	return bcr;
 }
 function perc(){
@@ -274,16 +277,18 @@ function showP1(){
 	document.getElementById('menu').style.display = 'none';
 }
 function p1Init(){
+	resizedP1();
+	showP1();
+}
+function resizedP1(){
 	info('p1 init '+ lines.length);
+	var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	document.getElementById("svg").style.minHeight = (h/2)+"px";
+	calculateBcr();
 	document.getElementById("svg").innerHTML = getMapa();
 	info(document.getElementById("svg").innerHTML);
 	document.getElementById("cuadro").innerHTML = getCuadro();
 	document.getElementById("contaminantes").innerHTML = infoContaminantes();
-	
-	showP1();
-}
-function resizedP1(){
-	p1Init();
 }
 
-data.onLoad.push(p1Init);
+//data.onLoad.push(p1Init);

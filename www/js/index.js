@@ -66,6 +66,16 @@ var lines = []; //data.getLines();
 data.onLoad.push(function(){
 	lines=data.getLines();
 
+	myPieP5.setAddBoton(function(){
+		document.getElementById('barChart').style.display='block';
+		myPieP5.setVisibleAddBoton(false);
+		myPieP5.setDoubleSize(false);
+	});
+	myBarP5.setCloseBoton(function(){
+		document.getElementById('barChart').style.display='none';
+		myPieP5.setVisibleAddBoton(true);
+		myPieP5.setDoubleSize(true);
+	});
 	myPieP5.setLines(lines);
 	myBarP5.setLines(lines);
 	//myLineP5.setLines(lines);
