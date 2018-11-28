@@ -118,9 +118,39 @@ h1 {
     -webkit-animation:fade 3000ms infinite;
 }
 
+.boton{
+	color: white;
+	margin:5px 5px 5% 5%;
+	padding:12px;
+	width:90%;
+	border-radius: 12px;
+	background-color: #008CBA; /* azul */
+}
+.mini-boton{
+	color: white;
+	padding:1px 12px 1px 12px;
+	border-radius: 12px;
+	background-color: #008CBA; /* azul */
+}
+.mini-boton-selected{
+	color: white;
+	padding:1px 12px 1px 12px;
+	border-radius: 12px;
+	background-color: DeepSkyBlue; /* azul */
+}
+.general{
+	background-color: DarkSalmon; /*#7fba67; -> verde*/
+	color: #ffffff;
+	border: none;
+	width: 100%;
+	padding: 10px;
+	font-size: 2em;
+	margin-top: 10px;
+	text-transform:none;
+}
 
-
-
+.tabla {border-style: solid; border-width: 1px;text-transform:none;}
+.tabla tr:nth-child(even){background-color: #f2f2f2;}
 
 
 .dropdown {
@@ -145,16 +175,17 @@ h1 {
     display: block;
 }
 
-.dropdown div:hover {background-color: #ddd;}
+/*.dropdown div:hover {background-color: Teal} #ddd;} gris*/
 
-.show {display: block;}
+.show {display: block; max-height: 3000px; transition:max-height 0.5s;}
+.oculto {max-height: 0px; overflow: hidden; transition:max-height 0.5s;}
 
 #myDropdown div{
-	background-color: #7fba67;
+	/*background-color: #7fba67;   verde */
 	color: #ffffff;
 	border: none;
-	width: 100%;
-	padding: 10px;
-	font-size: 2em;
+	width: 96%;
+	padding: 10px 2% 10px 2%;
+	font-size: 1.75em;
 	margin-top: 10px;
 }

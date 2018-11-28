@@ -75,18 +75,22 @@ getOverflowSomeLimit : function(line){ // Devuelve el % de overflow sobre el lim
 	var limite = data.getLimite(mag);
 	var overflow=0;
 	if('maximaDiaria' in mag) overflow = line.maxHour!=-1?line.values[line.maxHour]:0;
-	else overflow = line.medianValue; //line.avgValue;
+	else overflow = Math.max(line.medianValue, line.avgValue);
 	if (overflow/limite.limite>.5)
 		info(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
 	return overflow/limite.limite;
 },
 
-getZona : function(line){
+getZonaEstacion : function(station){
 	for(zona in this.zonas){
 		var estaciones = this.zonas[zona];
-		for(var i=0; i<estaciones.length; i++) if(estaciones[i]==line.station) return zona;
+		for(var i=0; i<estaciones.length; i++) if(estaciones[i]==station) return zona;
 	}
 	return '';
+},
+
+getZona : function(line){
+	return data.getZonaEstacion(line.station);
 },
 
 getLines : function(){
@@ -190,9 +194,18 @@ setStatistics : function(line){
 	line.cntValues=cntValues;
 	line.avgValue=cntValues==0?-1:sumValues/cntValues;
 	// Mediana:
-	var values=this.filterBySignificantValues(line.values);
+	var values=this.sortValues(this.filterBySignificantValues(line.values));
 	var idxMitad=Math.trunc(values.length/2)-1;
 	line.medianValue=values.length>0?(values.length%2==0?(values[idxMitad]+values[idxMitad+1])/2:values[idxMitad]):-1;
+},
+
+sortValues : function(values){
+	if(values!=null && values.length>0){
+		values.sort(function (a,b) {
+			return a - b;
+		});
+	}
+	return values;
 },
 
 sortAscByMin : function(lines){

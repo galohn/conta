@@ -124,19 +124,19 @@ h1 {
 	padding:12px;
 	width:90%;
 	border-radius: 12px;
-	background-color: #008CBA; // azul
+	background-color: #008CBA; /* azul */
 }
 .mini-boton{
 	color: white;
 	padding:1px 12px 1px 12px;
 	border-radius: 12px;
-	background-color: #008CBA; // azul
+	background-color: #008CBA; /* azul */
 }
 .mini-boton-selected{
 	color: white;
 	padding:1px 12px 1px 12px;
 	border-radius: 12px;
-	background-color: DeepSkyBlue; // azul
+	background-color: DeepSkyBlue; /* azul */
 }
 .general{
 	background-color: DarkSalmon; /*#7fba67; -> verde*/
@@ -146,6 +146,7 @@ h1 {
 	padding: 10px;
 	font-size: 2em;
 	margin-top: 10px;
+	text-transform:none;
 }
 
 .tabla {border-style: solid; border-width: 1px;text-transform:none;}
@@ -174,13 +175,13 @@ h1 {
     display: block;
 }
 
-.dropdown div:hover {background-color: #ddd;}
+/*.dropdown div:hover {background-color: Teal} #ddd;} gris*/
 
 .show {display: block; max-height: 3000px; transition:max-height 0.5s;}
 .oculto {max-height: 0px; overflow: hidden; transition:max-height 0.5s;}
 
 #myDropdown div{
-	background-color: #7fba67;
+	/*background-color: #7fba67;   verde */
 	color: #ffffff;
 	border: none;
 	width: 96%;

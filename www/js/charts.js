@@ -261,13 +261,13 @@ p.setCloseBoton=function(fn){
 p.showClose=function(){
 	if('fn' in botonClose){
 		p.push();
-		var pad=10, size=14, x0=p.width-menu.width-pad-size;
+		var pad=10, size=15, x0=p.width-menu.width-pad-size, y0=pad;
 		p.fill('gray');
-		p.rect(x0, pad, size, size);
+		p.rect(x0, y0, size, size);
 		p.stroke('white');
-		p.line(x0, pad,      x0+size, pad+size);
-		p.line(x0, pad+size, x0+size, pad);
-		botonClose.rect={x0:x0, y0:pad, x1:x0+size, y1: pad+size};
+		p.line(x0, y0,      x0+size, y0+size);
+		p.line(x0, y0+size, x0+size, y0);
+		botonClose.rect={x0:x0, y0:y0, x1:x0+size, y1: y0+size};
 		p.pop();
 	}
 }
@@ -275,7 +275,7 @@ p.showClose=function(){
 p.showBotonSuma=function(){
 	if('fn' in botonSuma && botonSuma.visible){
 		p.push();
-		var pad=10, size=14, x0=p.width-menu.width-pad-size, y0=p.height-pad-size;
+		var pad=10, size=15, x0=p.width-menu.width-pad-size, y0=p.height-pad-size;
 		p.fill('gray');
 		p.rect(x0, y0, size, size);
 		p.stroke('white');
@@ -495,12 +495,14 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 			
 			//values.splice(0);
 			for(var i=0; i<vals.length; i++){
-				var yValue = vals[i]==-1?yMin:p.map(vals[i], 0, maxValue /*line.values[line.maxHour]*/, yMin, yMax);
-				var xValue = p.map(i, 0, vals.length-1, xMin, xMax);
-				//p.vertex(xValue, yValue);
-				values.push({x:xValue, y:yValue, value:vals[i], hour:i});
-				
-				//info(line.values[i]+'=vertex ('+xValue+', '+yValue+') en ('+p.width+', '+p.height+')');
+				if(vals[i]!=-1){
+					var yValue = vals[i]==-1?yMin:p.map(vals[i], 0, maxValue /*line.values[line.maxHour]*/, yMin, yMax);
+					var xValue = p.map(i, 0, vals.length-1, xMin, xMax);
+					//p.vertex(xValue, yValue);
+					values.push({x:xValue, y:yValue, value:vals[i], hour:i});
+					
+					//info(line.values[i]+'=vertex ('+xValue+', '+yValue+') en ('+p.width+', '+p.height+')');
+				}
 			}
 
 			//
@@ -531,7 +533,7 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 	if(!(values==undefined)){
 		p.fill('white');
 		var horas=[]
-		for(var i=0; i<values.length; i++) horas.push({txt: i+'h', x: values[i].x, y: yMin+border-5});
+		for(var i=0; i<values.length; i++) horas.push({txt: values[i].hour+'h', x: values[i].x, y: yMin+border-5});
 		p.removeLabels(horas);
 		for(var i=0; i<horas.length; i++) p.text(horas[i].txt, horas[i].x, horas[i].y);
 	}

@@ -17,35 +17,36 @@
  * under the License.
  */
 var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+	// Application Constructor
+	initialize: function() {
+		this.bindEvents();
+	},
+	// Bind Event Listeners
+	//
+	// Bind any events that are required on startup. Common events are:
+	// 'load', 'deviceready', 'offline', and 'online'.
+	bindEvents: function() {
+		document.addEventListener('deviceready', this.onDeviceReady, false);
+	},
+	// deviceready Event Handler
+	//
+	// The scope of 'this' is the event. In order to call the 'receivedEvent'
+	// function, we must explicitly call 'app.receivedEvent(...);'
+	onDeviceReady: function() {
+		init();
+		app.receivedEvent('deviceready');
+	},
+	// Update DOM on a Received Event
+	receivedEvent: function(id) {
+		var parentElement = document.getElementById(id);
+		var listeningElement = parentElement.querySelector('.listening');
+		var receivedElement = parentElement.querySelector('.received');
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+		listeningElement.setAttribute('style', 'display:none;');
+		receivedElement.setAttribute('style', 'display:block;');
 
-        console.log('Received Event: ' + id);
-    }
+		info('Received Event: ' + id);
+	}
 };
 
 ///////////////////////
@@ -57,8 +58,6 @@ function info(str){
 ///////////////////////
 
 var myPieP5 = new p5(sketch, 'pieChart').setPie();
-//var myLineP5 = new p5(sketch, 'lineChart').setLine();
-//var myAreaP5 = new p5(sketch, 'areaChart').setArea();
 var myBarP5 = new p5(sketch, 'barChart').setBar();
 
 
@@ -78,13 +77,9 @@ data.onLoad.push(function(){
 	});
 	myPieP5.setLines(lines);
 	myBarP5.setLines(lines);
-	//myLineP5.setLines(lines);
-	//myAreaP5.setLines(lines);
 
 	myPieP5.setExtVName("myPieP5");
 	myBarP5.setExtVName("myBarP5");
-	//myAreaP5.setExtVName("myAreaP5");
-	//myLineP5.setExtVName("myLineP5");
 
 	p1Init();
 
@@ -119,6 +114,7 @@ function onBackKeyDown(){
 		donde=null;
 		p1Init();
 	}*/
+	info('onBackKeyDown');
 	if(document.getElementById('menu').style.display == 'block') p1Clicked();
 	else if(document.getElementById('p1').style.display == 'block') navigator.app.exitApp();
 	else showP1(); // contaminantes o p2
@@ -131,6 +127,9 @@ function init(){
 function html(e, attrs, content){ // class,style,transform,
 		content=content==undefined||content==null?'':content;
 		var atStr='';
-		if(attrs!=null)for(attr in attrs)atStr+=attr+'="'+attrs[attr]+'" ';
+		if(attrs!=null)
+			for(attr in attrs)
+				//if(attr!=null&&attr.length>2)
+					atStr+=attr+'="'+attrs[attr]+'" ';
 		return '<'+e+' '+atStr+'>'+(content.length>0?'\n\t':'')+content+'</'+e+'>\n';
 	}

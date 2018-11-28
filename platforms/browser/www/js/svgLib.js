@@ -406,8 +406,8 @@ function moveDotEnd(evt){
 				w = width-menu.width - 2 * margin, // chart area width and height
 				h = height - 2 * margin;
 	
-		var barWidth =  (w / lastIdx+1) * 0.8 / lines.length; // width of bar
-		var barMargin = (w / lastIdx+1) * 0.2; // margin between two bars
+		var barWidth =  (w / lastIdx) * 0.8 / lines.length; // width of bar
+		var barMargin = (w / lastIdx) * 0.2; // margin between two bars
 	
 		push();
 		stroke('dark-gray');

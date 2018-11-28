@@ -4,7 +4,7 @@ var ne={name:'Noreste', txts:[{txt:'Noreste',      x:378,y:289}],coords:[{x:338,
 var c={name:'Interior-M30', txts:[{txt:'Interior',x:265,y:333},{txt:'M-30',x:290,y:400}],coords:[{x:243, y:294},{x:278, y:300},{x:317, y:280},{x:343, y:280},{x:341, y:296},{x:357, y:321},{x:358, y:345},{x:365, y:357},{x:359, y:370},{x:364, y:390},{x:347, y:429},{x:334, y:436},{x:334, y:445},{x:327, y:449},{x:311, y:437},{x:295, y:422},{x:283, y:422},{x:281, y:411},{x:285, y:404},{x:281, y:393},{x:284, y:384},{x:271, y:380},{x:264, y:370},{x:264, y:352},{x:243, y:294}]};
 var so={name:'Suroeste', txts:[{txt:'Suroeste',     x:160,y:465}],coords:[{x:281, y:393},{x:285, y:404},{x:281, y:411},{x:283, y:422},{x:295, y:422},{x:311, y:437},{x:320, y:476},{x:320, y:555},{x:294, y:553},{x:274, y:533},{x:280, y:484},{x:233, y:496},{x:203, y:487},{x:188, y:495},{x:179, y:483},{x:160, y:481},{x:129, y:429},{x:154, y:429},{x:160, y:437},{x:200, y:433},{x:210, y:423},{x:209, y:416},{x:215, y:421},{x:231, y:417},{x:239, y:411},{x:256, y:406},{x:256, y:396},{x:281, y:393}]};
 var se={name:'Sureste', txts:[{txt:'Sureste',      x:360,y:480}],coords:[{x:320, y:555},{x:320, y:476},{x:311, y:437},{x:327, y:449},{x:334, y:445},{x:334, y:436},{x:347, y:429},{x:364, y:390},{x:380, y:396},{x:409, y:401},{x:426, y:398},{x:457, y:412},{x:491, y:434},{x:509, y:427},{x:532, y:425},{x:551, y:429},{x:541, y:440},{x:519, y:435},{x:502, y:499},{x:463, y:549},{x:468, y:566},{x:433, y:570},{x:418, y:560},{x:403, y:558},{x:379, y:537},{x:333, y:553},{x:320, y:555}]};
-
+var zones=[no,ne,se,so,c], r=null;
 var bcr=null;
 function calculateBcr(){
 	bcr=document.getElementById('svg').getBoundingClientRect();
@@ -18,13 +18,17 @@ function getBcr(){
 }
 function perc(){
 	var bcr = getBcr();
-	return Math.min(bcr.width/600, bcr.height/650);
+	//return Math.min(bcr.width/600, bcr.height/650);
+	return Math.min(bcr.width/r.width, bcr.height/r.height);
 }
 function mapX(v){
-	return getBcr().width/2.9 + v * perc();
+	//return getBcr().width/2.9 + v * perc();
+	//return getBcr().width/(getBcr().height/50) + v * perc();
+	return (bcr.width/2) - (r.width/2)*perc()      + v * perc();
 }
 function mapY(v){
-	return v * perc();
+	//return v * perc();
+	return (bcr.height/2) - (r.height/2)*perc()      + v * perc();
 }
 var colorOverMag={gray:{style:backColor('gray')+"color: white"},rojo:{style:backColor('red')+"color: white"}, naranja:{style:backColor('orange')+"color: black"}, amarillo:{style:backColor('yellow')+"color: black"}, verde:{style:backColor('green')+"color: white"}};
 function getOverColour(mag, value){
@@ -37,13 +41,14 @@ function getOverColour(mag, value){
 	else return colorOverMag.verde;
 }
 function getStyleLines(lines){
-	var style='green';
+	var style='gray';
 	for(var i=0; i<lines.length; i++){
 		var line=lines[i];
 		var overflow = data.getOverflowSomeLimit(line);
 		if(overflow>=1) return 'red';
 		else if(overflow>=.75) style='orange';
 		else if(overflow>=.5 && style!='orange') style='yellow';
+		else if(overflow>=0 && style=='gray') style='green';
 	}
 	return style;
 }
@@ -51,19 +56,44 @@ function getStyle(zone){
 	var ls=data.filterByZone(zone.name, data.lines);
 	return getStyleLines(ls);
 }
-function getZone(zone, style){
+function getZone(zone){
 	var str='';
 	for(var i=0;i<zone.coords.length; i++){
 		str+=' '+mapX(zone.coords[i].x)+','+mapY(zone.coords[i].y);
 	}
-	style=getStyle(zone);
+	var style=getStyle(zone);
 	str='<polygon points="'+str+'"'+(style==null?'':' style="'+'fill:'+style+';stroke:black;stroke-width:1'+'"')+' />';
 	for(var i=0; i<zone.txts.length; i++){
 		str+='<text x="'+mapX(zone.txts[i].x)+'" y="'+mapY(zone.txts[i].y)+'" fill="black">'+zone.txts[i].txt+'</text>';
 	}
 	return str;
 }
-function getMapa(){return getZone(no,'blue')+getZone(ne,'yellow')+getZone(c,'pink')+getZone(so,'green')+getZone(se,'coral');}
+function calculateRect(){
+	r={x0:null,y0:null,x1:null,y1:null};
+	for(var i in zones){
+		for(var j in zones[i].coords){
+			var c=zones[i].coords[j];
+			if(r.x0==null || r.x0>c.x) r.x0=c.x;
+			if(r.x1==null || r.x1<c.x) r.x1=c.x;
+			if(r.y0==null || r.y0>c.y) r.y0=c.y;
+			if(r.y1==null || r.y1<c.y) r.y1=c.y;
+		}
+	}
+	r.x0-=10; r.y0-=10;
+	r.x1+=10; r.y1+=10;
+	for(var i in zones)	for(var j in zones[i].coords) {var c=zones[i].coords[j]; c.x-=r.x0; c.y-=r.y0;}
+	r.width=r.x1-r.x0;
+	r.height=r.y1-r.y0;
+}
+function getMapa(){
+	calculateRect();
+	var mapa='';
+	for(var i in zones){
+		mapa+=getZone(zones[i]);
+	}
+	//return getZone(no,'blue')+getZone(ne,'yellow')+getZone(c,'pink')+getZone(so,'green')+getZone(se,'coral');}
+	return mapa;
+}
 function getCuadro(){
 	var mag=[];
 	var fila1=td();
@@ -88,13 +118,18 @@ function getCuadro(){
 			var value=data.getLimite(mag[m]).limite;
 			var linesByZoneAndMag=data.filterByMagnitude(mag[m].code, linesZone);
 			var style = getStyleLines(linesByZoneAndMag);
-			fila+=td({style:backColor(style)}, br());
+			fila+=td({style:backColor(style),onclick:"clickedOnMagnitud('"+mag[m].code+"');"}, br());
 		}
 		fila=td({width:"8%"},keyZ)+fila;
 		filas+=tr(fila);
 	}
 	//info('cuadro='+filas);
 	return table({style:"width:100%; padding: 15px;"}, fila1+filas);
+}
+function clickedOnMagnitud(code){
+	myPieP5.setMagnitud(code);
+	myBarP5.setMagnitud(code);
+	p1Clicked();
 }
 function br(){return '<br />';}
 function tr(attr,content){return !!content?html('tr',attr,content):html('tr',null,attr);}
@@ -113,7 +148,7 @@ function infoMagnitud(mag, lines){
 	var trs="";
 	var sep={style:"color: white; background-image: linear-gradient(to right, gray, lightGray);"};
 	var str=div(sep,"Descripción")+div({style:textAlign(Justify)},mag.descripcion);
-	str+=div(sep,"Efectos")+div(mag.efectos);
+	str+=div(sep,"Efectos")+div({style:textAlign(Justify)}, mag.efectos);
 	for(var cKey in campos){
 		var td1=""; // Calculo de los valores de proteccion
 		if(cKey in mag){
@@ -145,13 +180,14 @@ function infoMagnitud(mag, lines){
 		str+=br()+table({"class":"tabla"}, trs) + br() + table(null, tr1+tr2); //html('tr',null,pp));
 	}
 	///
+	var peque={style:"font-size:12px"};
 	if(lines.length>0){
 		str+=br()+div(sep,"Valores de las estaciones de Madrid");
 		var linesOrder={"Máximos": ["maxValue", data.sortAscByMax(lines).slice(),mag.unidad, "maxHour"],
 						"Mínimos": ["minValue", data.sortAscByMin(lines).slice(),mag.unidad,"minHour"],
 						"Media" : ["avgValue", data.sortAscByAvg(lines).slice(),mag.unidad],
 						"Mediana":["medianValue", data.sortAscByMedian(lines).slice(),mag.unidad]}; //, "Nº de valores":["cntValues", data.sortAscByCntValues(lines).slice(),"valores"]};
-		trs="";
+		trs=tr(td()+td(peque,'Mínimo')+td(peque,'Máximo'));
 		var divs="";
 		for(klo in linesOrder){
 			var property=linesOrder[klo][0];
@@ -164,15 +200,16 @@ function infoMagnitud(mag, lines){
 				td(data.estaciones[max.station].name+br()+spanColoreado(mag,max[property])+' '+sufijo)+
 				td(data.estaciones[min.station].name+br()+spanColoreado(mag,min[property])+' '+sufijo));
 				ids.valor.push(mag.abrv+klo);
-			var trs2=tr(td({colspan:5,style:backColor('DeepSkyBlue')+"color:white;"+textAlign(Center)},klo));
+			var trs2=tr(td({colspan:6,style:backColor('DeepSkyBlue')+"color:white;"+textAlign(Center)},klo));
 			for(var i in linesO){
 				var lin = linesO[i];
 				var h=data.lastIdxWithValue(lin.values);
 				trs2+=tr(
 					td(data.estaciones[lin.station].name)+
+					td(peque, data.getZonaEstacion(lin.station))+
 					td({style:textAlign(Right)},spanColoreado(mag, lin[property]))+
-					td(' '+sufijo)+
-					td((hora!=null)?'a las ':' de 0h')+
+					td(peque, sufijo)+
+					td(peque, (hora!=null)?'a las ':' de 0h')+
 					td({style:textAlign(Right)},(hora!=null)?(lin[hora]+"h"):("a "+h+"h")));
 			}
 			divs+=div({id:mag.abrv+klo+'tabla', "class":"oculto"}, table({"class":"tabla"},trs2));
@@ -184,7 +221,7 @@ function infoMagnitud(mag, lines){
 	///
 	ids.mag.push(mag.abrv);
 	return	div({id:mag.abrv+"1","class":"general",onclick:"clickMag('"+mag.abrv+"')"},mag.name+" ("+mag.abrv+")")+
-			div({id:mag.abrv, "class":"oculto", style:"font-size: 1.3em;"},str);
+			div({id:mag.abrv, "class":"oculto", style:"font-size: 1.2em;"},str);
 }
 function lpad(str, padString, length) {
     if(str==null) str="";
@@ -278,6 +315,7 @@ function showP1(){
 }
 function p1Init(){
 	resizedP1();
+	document.getElementById("contaminantes").innerHTML = infoContaminantes();
 	showP1();
 }
 function resizedP1(){
@@ -288,7 +326,7 @@ function resizedP1(){
 	document.getElementById("svg").innerHTML = getMapa();
 	info(document.getElementById("svg").innerHTML);
 	document.getElementById("cuadro").innerHTML = getCuadro();
-	document.getElementById("contaminantes").innerHTML = infoContaminantes();
+	
 }
 
 //data.onLoad.push(p1Init);

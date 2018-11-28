@@ -10,15 +10,15 @@ var swCallAjax=true;
 var swDraw=false;
 var border=24;
 var type={area:0, line:1, bar:2, pie:3};
-var typeFilter={max:{txt:"valor mas alto", fn:data.sortAscByMax},
-				min:{txt:"valor mas bajo", fn:data.sortDescByMax},
-				avg:{txt:"media mas alta", fn: data.sortAscByAvg},
-				cnt:{txt:"mas valores", fn:data.sortAscByCntValues},
-				median:{txt:"mediana mas alta", fn:data.sortAscByMedian}};
+var typeFilter={max:{txt:"valor máximo", fn:[data.sortAscByMax,data.sortDescByMax]},
+				min:{txt:"valor mínimo", fn:[data.sortAscByMin,data.sortDescByMin]},
+				avg:{txt:"media", fn:[data.sortAscByAvg,data.sortDescByAvg]},
+				cnt:{txt:"nº mediciones", fn:[data.sortAscByCntValues,data.sortDescByCntValues]},
+				median:{txt:"mediana", fn:[data.sortAscByMedian,data.sortDescByMedian]}};
 var typeChart=type.area;
-var typeFilterSelected=typeFilter.max;
+var typeFilterSelected={tf: typeFilter.max, idxFn:0, cnt:3};
 var textSizeSlider, extVName;
-var font, menu={}, contaminante={}, filterType={};
+var font, menu={}, contaminante={}, filterType={}, botonClose={}, botonSuma={visible:false}, doubleSize=false;
 
 p.setExtVName = function(name){ extVName=name; }
 
@@ -38,7 +38,7 @@ p.setup = function() {
   //p.strokeWeight(1);
   //noLoop();  // Run once and stop
   //p.callAjax();
-  textSizeSlider = p.createSlider(10, 72, 16);
+  textSizeSlider = p.createSlider(8, 40, 16);
   textSizeSlider.position(25, canva.y);
   //info(textSizeSlider);
   textSizeSlider.changed(function(){p.windowResized();});
@@ -51,12 +51,15 @@ p.getTextSize = function(){
 }
 
 p.windowResized = function () {
-  p.resizeCanvas(window.innerWidth, window.innerHeight/2.3);
+  p.resizeCanvas(window.innerWidth, (window.innerHeight/2.3)*(doubleSize?2:1));
   lastLinesLength=lines.length-1;
   this.setMenu();
   //info('lastLinesLength=lines.length-1'+lastLinesLength+' '+lines.length);
 }
-
+p.setDoubleSize=function(sw){
+	doubleSize=sw;
+	p.windowResized();
+}
 p.draw = function() {
 	//info('swCallAjax='+swCallAjax+' swDraw='+swDraw+' lines='+lines.length);
 	if(lastLinesLength!=lines.length){
@@ -66,9 +69,9 @@ p.draw = function() {
 		if(lines.length>0){
 			var lines2=data.removeEmptyLines(data.filterByMagnitude(contaminante.code, lines));
 			//lines2=data.sortAscByMax(lines2).slice(-3);
-			lines2=typeFilterSelected.fn(lines2).slice(-3);
+			lines2=typeFilterSelected.tf.fn[typeFilterSelected.idxFn](lines2).slice(-1*typeFilterSelected.cnt);
 			var magnitude=data.magnitudes[contaminante.code].name;
-			var str = '3 con '+typeFilterSelected.txt;
+			var str = typeFilterSelected.cnt+' con '+typeFilterSelected.tf.txt+' '+(typeFilterSelected.idxFn==0?"mas alto":"mas bajo");
 			if     (type.pie ==typeChart) p.pieChart(magnitude, str, lines2);
 			else if(type.area==typeChart) p.areaLineChart(magnitude, str, lines2, true);
 			else if(type.line==typeChart) p.areaLineChart(magnitude, str, lines2, false);
@@ -125,10 +128,11 @@ p.doOnMousePress = function () {
 			if(data.filterByMagnitude(mag, lines).length>0){
 				var dentro=data.magnitudes[mag].abrv+" : "+data.magnitudes[mag].name;
 				//str+='<div onclick="'+extVName+'.setMagnitud(\''+mag+'\');" style="background-color:'+colors[i++]+'">'+data.magnitudes[mag].name+'</div>'
-				str+=html('div',{onclick: extVName+'.setMagnitud(\''+mag+'\');', style:"background-color:DarkSalmon"},dentro);
+				//str+=html('div',{onclick: extVName+'.setMagnitud(\''+mag+'\');', style:"background-color:DarkSalmon"},dentro);
+				str+=div({onclick: extVName+'.setMagnitud(\''+mag+'\');', "class":"mini-boton"},dentro);
 			}
 		}
-		str='<div id="myDropdown" class="show">'+str+'</div>';
+		str=div({id:"myDropdown",'class':"show"},str);
 		
 		var menuMag=document.getElementById('menu');
 		menuMag.innerHTML=str;
@@ -137,24 +141,65 @@ p.doOnMousePress = function () {
 	}
 	if (!resized && p.mouseIntersectWith(filterType)){
 		resized=true;
-		var str='', i=0;
-		for(idx in typeFilter){
-			var tf = typeFilter[idx];
+		var trs='';
+		for(var attr in typeFilter){
+			var tf = typeFilter[attr];
 			//str+='<div onclick="'+extVName+'.setTypeFilter(\''+idx+'\');" style="background-color:'+colors[i++]+'">'+tf.txt+'</div>'
-			str+=html('div',{onclick: extVName+'.setTypeFilter(\''+idx+'\');', style:"background-color:DarkSalmon"}, tf.txt);
+			//str+=html('div',{onclick: extVName+'.setTypeFilter(\''+idx+'\');', style:"background-color:DarkSalmon"}, tf.txt);
+			trs+=tr(
+					td({style:backColor('DarkSalmon')}, tf.txt)+
+					td(p.attrsTypeFilter(attr, 0), '+ Alto')+
+					td(p.attrsTypeFilter(attr, 1), '+ Bajo')
+				);
 		}
-		str='<div id="myDropdown" class="show">'+str+'</div>';
+		var tds=""
+		for(var i=0; i<6; i++) tds+=td(p.attrsCnt(i+1),i+1);
+		var str=table({width:"96%"},tr(td({colspan:3},"Selecciona función:"))+trs)+
+			br()+table({width:"96%"},tr(td({colspan:6},'Selecciona nº valores:'))+tr(tds))+
+		    br()+div({onclick:extVName+".setTypeFilter()",style:backColor('green')+textAlign(Center)},"Hecho!");
+		str=div({id:"myDropdown",'class':"show"},div(str));
 		
 		var menuMag=document.getElementById('menu');
 		menuMag.innerHTML=str;
 		menuMag.style.display = 'block';
 		document.getElementById('cuerpo').style.display = 'none';
 	}
+	info(botonClose);
+	if (!resized && p.mouseIntersectWith(botonClose.rect)){
+		info('boton close');
+		if('fn' in botonClose) botonClose.fn();
+	}
+	if (!resized && p.mouseIntersectWith(botonSuma.rect)){
+		info('boton suma');
+		if('fn' in botonSuma) botonSuma.fn();
+	}
 	if(resized) p.windowResized();
 }
-
-p.setTypeFilter = function(code){
-	typeFilterSelected=typeFilter[code];
+p.attrsTypeFilter=function(keyName, zeroOrOne){
+	var myClass=typeFilterSelected.tf==typeFilter[keyName]&&typeFilterSelected.idxFn==zeroOrOne?"mini-boton-selected":"mini-boton";
+	return {id:"tf"+keyName+zeroOrOne, "class":myClass, onclick: extVName+'.setTypeFilterFn(\''+keyName+'\','+zeroOrOne+');'}
+}
+p.attrsCnt=function(i){
+	var myClass=typeFilterSelected.cnt==i?"mini-boton-selected":"mini-boton";
+	return {id:'cnt'+i,"class":myClass,style:textAlign(Center),onclick:extVName+'.setCnt('+i+')'};
+}
+p.setCnt = function(cnt){
+	var ids=['cnt1','cnt2','cnt3','cnt4','cnt5','cnt6'];
+	cambiaTodos(ids,'',"mini-boton-selected","mini-boton");
+	toggle(document.getElementById('cnt'+cnt), "mini-boton", "mini-boton-selected");
+	typeFilterSelected.cnt=cnt;
+}
+p.setTypeFilterFn = function(code,idx){
+	info('setTypeFilter code='+code+" idx="+idx);
+	typeFilterSelected.tf=typeFilter[code];
+	typeFilterSelected.idxFn=idx;
+	//
+	var ids=[];
+	for(var attr in typeFilter) for(var i in [0,1]) ids.push("tf"+attr+i);
+	cambiaTodos(ids,'',"mini-boton-selected","mini-boton");
+	toggle(document.getElementById("tf"+code+idx), "mini-boton", "mini-boton-selected");
+}
+p.setTypeFilter = function(){
 	p.windowResized();
 	document.getElementById('menu').style.display = 'none';
 	document.getElementById('cuerpo').style.display = 'block';
@@ -167,7 +212,7 @@ p.setMagnitud = function(code){
 }
 
 p.mouseIntersectWith = function(anObject){
-	return p.mouseX>=anObject.x0 && p.mouseY>=anObject.y0 && p.mouseX<=anObject.x1 && p.mouseY<=anObject.y1;
+	return (!!anObject) && ('x0' in anObject) && p.mouseX>=anObject.x0 && p.mouseY>=anObject.y0 && p.mouseX<=anObject.x1 && p.mouseY<=anObject.y1;
 }
 
 p.setArea = function(){ typeChart=type.area; return this;}
@@ -202,6 +247,43 @@ p.showContaminante=function(cont){
   //p.text(title, 10-1, (border*2)-1); y0 es arriba e y1 es abajo
   p.fill('white');
   p.text(cont, 10+5, contaminante.y1-4); //border*1.5+4);
+}
+
+p.setAddBoton=function(fn){
+	botonSuma.fn=fn;
+}
+p.setVisibleAddBoton=function(sw){
+	botonSuma.visible=sw;
+}
+p.setCloseBoton=function(fn){
+	botonClose.fn=fn;
+}
+p.showClose=function(){
+	if('fn' in botonClose){
+		p.push();
+		var pad=10, size=15, x0=p.width-menu.width-pad-size, y0=pad;
+		p.fill('gray');
+		p.rect(x0, y0, size, size);
+		p.stroke('white');
+		p.line(x0, y0,      x0+size, y0+size);
+		p.line(x0, y0+size, x0+size, y0);
+		botonClose.rect={x0:x0, y0:y0, x1:x0+size, y1: y0+size};
+		p.pop();
+	}
+}
+
+p.showBotonSuma=function(){
+	if('fn' in botonSuma && botonSuma.visible){
+		p.push();
+		var pad=10, size=15, x0=p.width-menu.width-pad-size, y0=p.height-pad-size;
+		p.fill('gray');
+		p.rect(x0, y0, size, size);
+		p.stroke('white');
+		p.line(x0, y0+size/2, x0+size, y0+size/2);
+		p.line(x0+size/2, y0, x0+size/2, y0+size);
+		botonSuma.rect={x0:x0, y0:y0, x1:x0+size, y1: y0+size};
+		p.pop();
+	}
 }
 
 p.showFilter=function(filterTxt){ // origin [0, 0] is the coordinate in the upper left of the window
@@ -259,6 +341,8 @@ p.pieChart = function(cont, filterTxt, lines) {
 	this.shadowText(str, x0-20, y0, 'white', 'black');
     lastAngle += p.radians(angles[i]);
   }
+  p.showClose();
+  p.showBotonSuma();
 }
 
 p.isPointInsideArc = function (){
@@ -306,8 +390,8 @@ p.barChart = function(cont, filterTxt, lines){
       w = p.width-menu.width - 2 * margin, // chart area width and height
       h = p.height - 2 * margin;
 
-  var barWidth =  (w / lastIdx+1) * 0.8 / lines.length; // width of bar
-  var barMargin = (w / lastIdx+1) * 0.2; // margin between two bars
+  var barWidth =  (w / lastIdx) * 0.8 / lines.length; // width of bar
+  var barMargin = (w / lastIdx) * 0.2; // margin between two bars
 
   p.push();
   p.stroke('dark-gray');
@@ -355,6 +439,9 @@ p.barChart = function(cont, filterTxt, lines){
   p.removeLabels(labels);
   for(var i=0; i<labels.length; i++) p.text(labels[i].txt, labels[i].x, labels[i].y);
   p.pop();
+
+  p.showClose();
+  p.showBotonSuma();
 }
 
 p.drawLimite = function(limite, maxValue, margin, w, yMin, yMax, unidad){
@@ -368,7 +455,7 @@ p.drawLimite = function(limite, maxValue, margin, w, yMin, yMax, unidad){
 		p.fill('red');
 		p.noStroke();
 		var str='Límite: '+limite+' '+unidad;
-		if(value < yMax*1.2){
+		if(value < yMax*2){ // 1.2 original
 			var bounds = font.textBounds(str, margin, value, this.getTextSize());
 			margin = w - bounds.w + margin;
 			value+=(2+bounds.h);
@@ -408,12 +495,14 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 			
 			//values.splice(0);
 			for(var i=0; i<vals.length; i++){
-				var yValue = vals[i]==-1?yMin:p.map(vals[i], 0, maxValue /*line.values[line.maxHour]*/, yMin, yMax);
-				var xValue = p.map(i, 0, vals.length-1, xMin, xMax);
-				//p.vertex(xValue, yValue);
-				values.push({x:xValue, y:yValue, value:vals[i], hour:i});
-				
-				//info(line.values[i]+'=vertex ('+xValue+', '+yValue+') en ('+p.width+', '+p.height+')');
+				if(vals[i]!=-1){
+					var yValue = vals[i]==-1?yMin:p.map(vals[i], 0, maxValue /*line.values[line.maxHour]*/, yMin, yMax);
+					var xValue = p.map(i, 0, vals.length-1, xMin, xMax);
+					//p.vertex(xValue, yValue);
+					values.push({x:xValue, y:yValue, value:vals[i], hour:i});
+					
+					//info(line.values[i]+'=vertex ('+xValue+', '+yValue+') en ('+p.width+', '+p.height+')');
+				}
 			}
 
 			//
@@ -444,7 +533,7 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 	if(!(values==undefined)){
 		p.fill('white');
 		var horas=[]
-		for(var i=0; i<values.length; i++) horas.push({txt: i+'h', x: values[i].x, y: yMin+border-5});
+		for(var i=0; i<values.length; i++) horas.push({txt: values[i].hour+'h', x: values[i].x, y: yMin+border-5});
 		p.removeLabels(horas);
 		for(var i=0; i<horas.length; i++) p.text(horas[i].txt, horas[i].x, horas[i].y);
 	}
@@ -479,6 +568,8 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 		//info('serie: '+txt+': '+x+', '+y);
 	}
 	//
+  p.showClose();
+  p.showBotonSuma();
 }
 
 p.drawCheck = function(x, y, width, height, selected){
