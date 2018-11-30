@@ -6,7 +6,7 @@ var data =  {
 			"28079004": {name:"Pza. de España", color:'Lavender'},
 			"28079005": {name:"Barrio del Pilar", color:'Purple'}, "28079039": {name:"Barrio del Pilar", color:'Purple'},
 			"28079006": {name:"Pza. Dr. Marañón", color:'Brown'},
-			"28079007": {name:"Pza. M. de Salamanca", color:'Beige'}, "28079008": {name:"Escuelas Aguirre", color:'Maroon'},
+			"28079007": {name:"Pza. M. de Salamanca", color:'Beige'}, "28079008": {name:"Escuelas Aguirre", color:'Tomato'}, // Maroon es rojo
 			"28079009": {name:"Pza. Luca de Tena", color:'Mint'},
 			"28079010": {name:"Cuatro Caminos", color:'Gold'},	"28079038": {name:"Cuatro Caminos", color:'Gold'},
 			"28079011": {name:"Av. Ramón y Cajal", color:'Olive'}, "28079012": {name:"Pza. Manuel Becerra", color:'DarkGoldenRod'},

@@ -189,3 +189,10 @@ h1 {
 	font-size: 1.75em;
 	margin-top: 10px;
 }
+
+.triangle {
+	width:0; 
+	border-bottom:120px solid red; 
+	border-left:60px solid white; 
+	border-right:60px solid white;
+}

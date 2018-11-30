@@ -30,7 +30,7 @@ function mapY(v){
 	//return v * perc();
 	return (bcr.height/2) - (r.height/2)*perc()      + v * perc();
 }
-var colorOverMag={gray:{style:backColor('gray')+"color: white"},rojo:{style:backColor('red')+"color: white"}, naranja:{style:backColor('orange')+"color: black"}, amarillo:{style:backColor('yellow')+"color: black"}, verde:{style:backColor('green')+"color: white"}};
+var colorOverMag={gray:{style:backColor('gray')+"color: white"},rojo:{style:backColor('Maroon')+"color: white"}, naranja:{style:backColor('orange')+"color: black"}, amarillo:{style:backColor('yellow')+"color: black"}, verde:{style:backColor('green')+"color: white"}};
 function getOverColour(mag, value){
 	var limite = data.getLimite(mag);
 	var overflow = value/limite.limite;
@@ -45,7 +45,7 @@ function getStyleLines(lines){
 	for(var i=0; i<lines.length; i++){
 		var line=lines[i];
 		var overflow = data.getOverflowSomeLimit(line);
-		if(overflow>=1) return 'red';
+		if(overflow>=1) return 'Maroon'; //'red';
 		else if(overflow>=.75) style='orange';
 		else if(overflow>=.5 && style!='orange') style='yellow';
 		else if(overflow>=0 && style=='gray') style='green';
@@ -295,10 +295,10 @@ function infoContaminantes(){
 	info(str);
 	return str;
 }
-function p1Clicked(){
+function p1Clicked(){ // showCharts
 	document.getElementById('p1').style.display = 'none';
-	document.getElementById('cuerpo').style.display = 'block';
-	document.getElementById('menu').style.display = 'none';
+	document.getElementById('cuerpo').style.display = 'block'; // charts
+	document.getElementById('menu').style.display = 'none';  // Función de filtro y seleccion de contaminante en la pantalla de grafico
 	donde='p2';
 }
 function contaminantesClicked(){
@@ -308,8 +308,8 @@ function contaminantesClicked(){
 	donde='p2';
 }
 function showP1(){
-	document.getElementById('p1').style.display = 'block';
-	document.getElementById('cuerpo').style.display = 'none';
+	document.getElementById('p1').style.display = 'block';  document.getElementById("svg").style.display = 'block'; // refresco
+	document.getElementById('cuerpo').style.display = 'none'; // charts
 	document.getElementById('contaminantes').style.display = 'none';
 	document.getElementById('menu').style.display = 'none';
 }
@@ -324,7 +324,7 @@ function resizedP1(){
 	document.getElementById("svg").style.minHeight = (h/2)+"px";
 	calculateBcr();
 	document.getElementById("svg").innerHTML = getMapa();
-	info(document.getElementById("svg").innerHTML);
+	//info(document.getElementById("svg").innerHTML);
 	document.getElementById("cuadro").innerHTML = getCuadro();
 	
 }

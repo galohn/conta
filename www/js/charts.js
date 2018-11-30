@@ -318,15 +318,17 @@ p.pieChart = function(cont, filterTxt, lines) {
   this.showFilter(filterTxt);
   this.showMenu();
   for (var i = 0; i < lines.length; i++) {
-	  var lin = lines[i];
-	  var estacion=data.estaciones[lin.station];
-    var gray = p.map(i, 0, lines.length, 0, 255);
+	var lin = lines[i];
+	var estacion=data.estaciones[lin.station];
+	var gray = p.map(i, 0, lines.length, 0, 255);
 	//p.fill(colors[i]);
 	p.fill(estacion.color);
-    //fill(getColor(i, lines));
+	//fill(getColor(i, lines));
 	var xy=p.pieCenter();
 	// arc(x, y, weight, height, start, stop, [CHORD|PIE|OPEN])
-    s=p.arc(xy.x, xy.y, diameter, diameter, lastAngle, lastAngle+p.radians(angles[i]));
+	s=angles[i]==360?
+		p.ellipse(xy.x, xy.y, diameter, diameter)
+		:p.arc(xy.x, xy.y, diameter, diameter, lastAngle, lastAngle+p.radians(angles[i]));
 	//info(s);
 	var angle=lastAngle+p.radians(angles[i])/2;
 	var radio_ = diameter/2;
@@ -339,7 +341,7 @@ p.pieChart = function(cont, filterTxt, lines) {
 	else p.textAlign(p.LEFT);
 	if(y0>xy.y) y0-=20;
 	this.shadowText(str, x0-20, y0, 'white', 'black');
-    lastAngle += p.radians(angles[i]);
+	lastAngle += p.radians(angles[i]);
   }
   p.showClose();
   p.showBotonSuma();

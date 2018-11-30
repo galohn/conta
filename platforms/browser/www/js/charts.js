@@ -326,7 +326,9 @@ p.pieChart = function(cont, filterTxt, lines) {
     //fill(getColor(i, lines));
 	var xy=p.pieCenter();
 	// arc(x, y, weight, height, start, stop, [CHORD|PIE|OPEN])
-    s=p.arc(xy.x, xy.y, diameter, diameter, lastAngle, lastAngle+p.radians(angles[i]));
+    s=angles[i]==360?
+		p.ellipse(xy.x, xy.y, diameter, diameter)
+		:p.arc(xy.x, xy.y, diameter, diameter, lastAngle, lastAngle+p.radians(angles[i]));
 	//info(s);
 	var angle=lastAngle+p.radians(angles[i])/2;
 	var radio_ = diameter/2;
