@@ -17,7 +17,7 @@ var data =  {
 			"28079036": {name:"Moratalaz II", color:'LawnGreen'}, "28079021": {name:"Pza. Cristo Rey", color:'LightCoral'}, "28079022": {name:"Pº. Pontones", color:'LightPink'},
 			"28079023": {name:"Final c/Alcalá", color:'DarkKhaki'},
 			"28079024": {name:"Casa de Campo", color:'LimeGreen'}, "28079025": {name:"Santa Eugenia", color:'LightSeaGreen'},
-			"28079026": {name:"Urb. Embajada (Barajas)", color:'Magenta'}, "28079055": {name:"Urb. Embajada (Barajas)", color:'Magenta'},
+			"28079026": {name:"Urb. Embajada", color:'Magenta'}, "28079055": {name:"Urb. Embajada", color:'Magenta'},
 			"28079027": {name:"Barajas", color:'MediumBlue'},
 			"28079047": {name:"Méndez Álvaro", color:'MediumSpringGreen'}, "28079048": {name:"Pº. Castellana Alta", color:'OrangeRed'}, "28079049": {name:"Retiro", color:'Orchid'},
 			"28079050": {name:"Pza. Castilla", color:'DarkSalmon'},
@@ -64,7 +64,7 @@ getLimite : function(magnitud){
 	else if(valor!=null && 'informacion' in valor.valor) {valor.limite=valor.valor.informacion*1.5; valor.over='informacion'}
 	else if(valor!=null && 'objetivo' in valor.valor) {valor.limite=valor.valor.objetivo*2; valor.over='objetivo'}
 	else valor={limite: -1};
-	info('limite en '+magnitud.name+'='+valor.limite);
+	//info('limite en '+magnitud.name+'='+valor.limite);
 	return valor;
 },
 
@@ -105,7 +105,7 @@ getLines : function(){
 				if(data.lines.length==0) data.readTextFile('data.txt');
 			};
 			httpRq.onreadystatechange = function() {
-				info('gl onreadystatechange: readyState='+httpRq.readyState+' status='+httpRq.status+' text='+httpRq.responseText);
+				info('gl onreadystatechange: readyState='+httpRq.readyState+' status='+httpRq.status+' text='+httpRq.responseText.length);
 				if (httpRq.readyState == 4 && httpRq.status == 200){
 					aCallback(httpRq.responseText);
 				}
@@ -215,7 +215,7 @@ sortAscByMin : function(lines){
 		var v2 = b.minHour==-1?-1:b.values[b.minHour];
 		return v1 - v2;
 	});
-	info(lines.length+' lines sorted asc by min');
+	//info(lines.length+' lines sorted asc by min');
 	return x;
 },
 sortDescByMin : function(lines){
@@ -225,7 +225,7 @@ sortDescByMin : function(lines){
 		var v2 = b.minHour==-1?-1:b.values[b.minHour];
 		return v2 - v1;
 	});
-	info(lines.length+' lines sorted desc by min');
+	//info(lines.length+' lines sorted desc by min');
 	return x;
 },
 
@@ -236,7 +236,7 @@ sortAscByMax : function(lines){
 		var v2 = b.maxHour==-1?-1:b.values[b.maxHour];
 		return v1 - v2;
 	});
-	info(lines.length+' lines sorted asc by max');
+	//info(lines.length+' lines sorted asc by max');
 	return x;
 },
 
@@ -247,7 +247,7 @@ sortDescByMax : function(lines){
 		var v2 = b.maxHour==-1?-1:b.values[b.maxHour];
 		return v2 - v1;
 	});
-	info(lines.length+' lines sorted asc by max');
+	//info(lines.length+' lines sorted asc by max');
 	return x;
 },
 
@@ -256,7 +256,7 @@ sortAscByAvg : function(lines){
 	var x=lines.sort(function(a, b) {
 		return a.avgValue - b.avgValue;
 	});
-	info(lines.length+' lines sorted asc by avg');
+	//info(lines.length+' lines sorted asc by avg');
 	return x;
 },
 
@@ -265,7 +265,7 @@ sortDescByAvg : function(lines){
 	var x=lines.sort(function(a, b) {
 		return b.avgValue - a.avgValue;
 	});
-	info(lines.length+' lines sorted desc by avg');
+	//info(lines.length+' lines sorted desc by avg');
 	return x;
 },
 
@@ -274,7 +274,7 @@ sortAscByCntValues : function(lines){
 	var x=lines.sort(function(a, b) {
 		return a.cntValues - b.cntValues;
 	});
-	info(lines.length+' lines sorted asc by cntValues');
+	//info(lines.length+' lines sorted asc by cntValues');
 	return x;
 },
 
@@ -283,7 +283,7 @@ sortDescByCntValues : function(lines){
 	var x=lines.sort(function(a, b) {
 		return b.cntValues - a.cntValues;
 	});
-	info(lines.length+' lines sorted desc by cntValues');
+	//info(lines.length+' lines sorted desc by cntValues');
 	return x;
 },
 
@@ -292,7 +292,7 @@ sortAscByMedian : function(lines){
 	var x=lines.sort(function(a, b) {
 		return a.medianValue - b.medianValue;
 	});
-	info(lines.length+' lines sorted asc by median');
+	//info(lines.length+' lines sorted asc by median');
 	return x;
 },
 
@@ -301,7 +301,7 @@ sortDescByMedian : function(lines){
 	var x=lines.sort(function(a, b) {
 		return b.medianValue - a.medianValue;
 	});
-	info(lines.length+' lines sorted desc by median');
+	//info(lines.length+' lines sorted desc by median');
 	return x;
 },
 
@@ -357,7 +357,7 @@ filterByMagnitude : function(inMagnitude, lines){
 
 lastIdxWithValue : function(values){
 	var i;
-	for(i=values.length-1; i>=0 && values[i]==-1; i--){}; // Aqui quitamos las ultimas horas sin valor
+	for(i=values.length-1; i>=0 && values[i]==-1; i--){}; // Aqui buscamos la ultima horas con valor
 	return i;
 },
 
