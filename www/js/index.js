@@ -27,13 +27,46 @@ var app = {
 	// 'load', 'deviceready', 'offline', and 'online'.
 	bindEvents: function() {
 		document.addEventListener('deviceready', this.onDeviceReady, false);
+		var zona = document.getElementById('p1');
+		var hammer = new Hammer(zona);
+
+		hammer.on('swipe', function(ev){
+			if(ev.type=='swipe'){
+				if(ev.direction==2){goToP1Der();} // mov a la izquierda
+				if(ev.direction==4){showP1();}//zona.className='swipe-derecha';
+			}
+		});
 	},
 	// deviceready Event Handler
 	//
 	// The scope of 'this' is the event. In order to call the 'receivedEvent'
 	// function, we must explicitly call 'app.receivedEvent(...);'
 	onDeviceReady: function() {
+		//document.removeEventListener('deviceready', onDeviceReady, false);
 		init();
+		info("Set AdMobAds options:");
+		info(!!admob);
+		info(window.admob);
+		info(admob);
+		info("puglins:");
+		info(window.plugins);
+		info("puglins de admob:");
+		info(window.plugins.AdMob);
+		info(window.plugins.admob);
+		info("admob setOptions:");
+		admob.setOptions({
+			publisherId:          "ca-app-pub-9862323093910331~8860637734"  // Required ca-app-pub-9862323093910331/8933871494
+			//interstitialAdId:     "ca-app-pub-XXXXXXXXXXXXXXXX/IIIIIIIIII",  // Optional
+			//tappxIdiOS:           "/XXXXXXXXX/Pub-XXXX-iOS-IIII",            // Optional
+			//tappxIdAndroid:       "/XXXXXXXXX/Pub-XXXX-Android-AAAA",        // Optional
+			//tappxShare:           0.5                                        // Optional
+			,bannerAtTop: false
+			,overlap: false
+			,isTesting: true
+		});
+		info("creando banner:");
+		admob.createBannerView();
+		info('banner puesto');
 		app.receivedEvent('deviceready');
 	},
 	// Update DOM on a Received Event
@@ -84,11 +117,15 @@ data.onLoad.push(function(){
 	p1Init();
 
 	var fecha=lines[0].day;
-	var anio=fecha.substring(0,4);
-	var mes=parseInt(fecha.substring(4,6));
-	var dia=fecha.substring(6);
-	const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-	document.getElementById('titulo').innerHTML=html('span',{style:"text-transform:none;"},"Datos del "+dia+"-"+monthNames[mes-1]+"-"+anio);
+	var anio=parseInt(fecha.substring(0,4));
+	var mes=parseInt(fecha.substring(4,6))-1;
+	var dia=parseInt(fecha.substring(6));
+	var myDate=new Date(anio, mes, dia);
+	const dayNames=["dom","lun","mar","mié","jue","vie","sáb"];
+	const monthNames = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+	//var titulo="Datos del "+dia+"-"+monthNames[mes]+"-"+anio;
+	var titulo=dayNames[myDate.getDay()]+" "+dia+" "+monthNames[mes]+"<br />hasta las "+data.maxIdxValueWithoutValue(lines)+"h";
+	document.getElementById('titulo').innerHTML=html('span',{style:"text-transform:none;"},titulo);
 
 });
 
@@ -116,6 +153,7 @@ function onBackKeyDown(){
 	}*/
 	info('onBackKeyDown');
 	if(document.getElementById('menu').style.display == 'block') p1Clicked();
+	else if(document.getElementById('p1Der').style.display == 'block') showP1();
 	else if(document.getElementById('p1').style.display == 'block') navigator.app.exitApp();
 	else showP1(); // contaminantes o p2
 }

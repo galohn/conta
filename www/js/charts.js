@@ -16,7 +16,7 @@ var typeFilter={max:{txt:"valor máximo", fn:[data.sortAscByMax,data.sortDescByM
 				cnt:{txt:"nº mediciones", fn:[data.sortAscByCntValues,data.sortDescByCntValues]},
 				median:{txt:"mediana", fn:[data.sortAscByMedian,data.sortDescByMedian]}};
 var typeChart=type.area;
-var typeFilterSelected={tf: typeFilter.max, idxFn:0, cnt:3};
+var typeFilterSelected={tf: typeFilter.max, idxFn:0, cnt:3, zones:["M-30","NE","NO","SE","SO"]};
 var textSizeSlider, extVName;
 var font, menu={}, contaminante={}, filterType={}, botonClose={}, botonSuma={visible:false}, doubleSize=false;
 
@@ -38,7 +38,7 @@ p.setup = function() {
   //p.strokeWeight(1);
   //noLoop();  // Run once and stop
   //p.callAjax();
-  textSizeSlider = p.createSlider(8, 40, 16);
+  textSizeSlider = p.createSlider(6, 38, 16);
   textSizeSlider.position(25, canva.y);
   //info(textSizeSlider);
   textSizeSlider.changed(function(){p.windowResized();});
@@ -69,6 +69,7 @@ p.draw = function() {
 		if(lines.length>0){
 			var lines2=data.removeEmptyLines(data.filterByMagnitude(contaminante.code, lines));
 			//lines2=data.sortAscByMax(lines2).slice(-3);
+			lines2=data.filterByZones(p.getZoneNames(),lines2);
 			lines2=typeFilterSelected.tf.fn[typeFilterSelected.idxFn](lines2).slice(-1*typeFilterSelected.cnt);
 			var magnitude=data.magnitudes[contaminante.code].name;
 			var str = typeFilterSelected.cnt+' con '+typeFilterSelected.tf.txt+' '+(typeFilterSelected.idxFn==0?"mas alto":"mas bajo");
@@ -100,7 +101,41 @@ p.showMenu = function(){
 	}
 	p.pop();
 }
-
+p.seleccionaZonaPanel = function(){
+	var lis="";
+	for(idx in zones){
+		var z=zones[idx];
+		lis+=html('li', {"class":"tg-list-item"},
+				html('span', {"class":"tgl-title"}, z.abrv)+
+				html('input',{"class":"tgl tgl-skewed", id:"cb"+z.abrv, type:"checkbox"})+
+				html('label',{"class":"tgl-btn", "data-tg-off":"Off", "data-tg-on":"On", "for":"cb"+z.abrv})
+			);
+	}
+	var ul=table(tr({width:"100%"}, td("Zonas:")+td({width:"100%"}, html('ul',{"class":"tg-list"}, lis))));
+	return ul;
+}
+p.seleccionaZona = function(){
+	for(idx in zones){
+		var z=zones[idx];
+		document.getElementById("cb"+z.abrv).checked = typeFilterSelected.zones.indexOf(z.abrv)>=0;
+	}
+}
+p.setZoneClicked = function(zoneAbrv){
+	typeFilterSelected.zones=[zoneAbrv];
+	p.windowResized();
+}
+p.getZoneNames = function(){
+	var names=[];
+	for(var i in typeFilterSelected.zones) names.push(zoneName(typeFilterSelected.zones[i]));
+	return names;
+}
+p.guardaZona = function(){
+	typeFilterSelected.zones.splice(0,typeFilterSelected.zones.length);
+	for(idx in zones){
+		var z=zones[idx];
+		if(document.getElementById("cb"+z.abrv).checked) typeFilterSelected.zones.push(z.abrv);
+	}
+}
 p.doOnMousePress = function () {
 	info('Detectado mouse pressed en '+typeChart);
 	var resized=false;
@@ -146,7 +181,7 @@ p.doOnMousePress = function () {
 			var tf = typeFilter[attr];
 			//str+='<div onclick="'+extVName+'.setTypeFilter(\''+idx+'\');" style="background-color:'+colors[i++]+'">'+tf.txt+'</div>'
 			//str+=html('div',{onclick: extVName+'.setTypeFilter(\''+idx+'\');', style:"background-color:DarkSalmon"}, tf.txt);
-			trs+=tr(
+			trs+=tr({style:"text-transform:capitalize"},
 					td({style:backColor('DarkSalmon')}, tf.txt)+
 					td(p.attrsTypeFilter(attr, 0), '+ Alto')+
 					td(p.attrsTypeFilter(attr, 1), '+ Bajo')
@@ -155,14 +190,16 @@ p.doOnMousePress = function () {
 		var tds=""
 		for(var i=0; i<6; i++) tds+=td(p.attrsCnt(i+1),i+1);
 		var str=table({width:"96%"},tr(td({colspan:3},"Selecciona función:"))+trs)+
-			br()+table({width:"96%"},tr(td({colspan:6},'Selecciona nº valores:'))+tr(tds))+
-		    br()+div({onclick:extVName+".setTypeFilter()",style:backColor('green')+textAlign(Center)},"Hecho!");
+			p.seleccionaZonaPanel()+
+			table({width:"96%"},tr(td({colspan:6},'Selecciona nº valores:'))+tr(tds))+
+		    div({onclick:extVName+".setTypeFilter()","class":"mini-boton",style:textAlign(Center)},"Hecho!");
 		str=div({id:"myDropdown",'class':"show"},div(str));
 		
 		var menuMag=document.getElementById('menu');
 		menuMag.innerHTML=str;
 		menuMag.style.display = 'block';
 		document.getElementById('cuerpo').style.display = 'none';
+		p.seleccionaZona();
 	}
 	info(botonClose);
 	if (!resized && p.mouseIntersectWith(botonClose.rect)){
@@ -201,6 +238,7 @@ p.setTypeFilterFn = function(code,idx){
 }
 p.setTypeFilter = function(){
 	p.windowResized();
+	p.guardaZona();
 	document.getElementById('menu').style.display = 'none';
 	document.getElementById('cuerpo').style.display = 'block';
 }

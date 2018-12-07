@@ -47,7 +47,7 @@ var data =  {
 			 "38": {name: "Paraxileno",            abrv:"PXY",   unidad:"µg/m3", descripcion:"En condiciones normales, son líquidos incoloros e inflamables con un característico olor parecido al tolueno.", efectos:"En contacto con la piel y los ojos, este compuesto puede provocar irritación, enrojecimiento y dolores agudos."},
 			 "39": {name: "Ortoxileno",            abrv:"OXY",   unidad:"µg/m3", descripcion:"Se trata de líquidos incoloros e inflamables con un característico olor parecido al tolueno.", efectos:"Los xilenos son nocivos. Sus vapores pueden provocar dolor de cabeza, náuseas y malestar general."},
 			 "42": {name: "Hidrocarburos totales(hexano)", abrv:"TCH", unidad:"mg/m3", descripcion:"El n-hexano es un sustancia química elaborada a partir del petróleo crudo. El n-hexano puro es un líquido incoloro con un olor ligeramente desagradable. Se evapora fácilmente en el aire y se disuelve muy poco en el agua.", efectos:"Esta sustancia puede causar efectos sobre: el sistema nervioso, generar irritación en las vías respiratorias, producir vértigo, somnolencia, dolor de cabeza, dificultad al respirar."},
-			 "43": {name: "Metano",                abrv:"Ch4",   unidad:"", descripcion:"El metano es uno de los principales gases del efecto invernadero, su efecto negativo sobre el calentamiento del planeta es 21 veces mayor que el del dióxido de carbono. El metano se produce por fuentes naturales.", efectos:"El metano no es tóxico y no es peligroso si se inhala en pequeñas cantidades; sin embargo, si una gran cantidad de gas natural o metano desplaza el aire, la falta de oxígeno podría provocar asfixia."},
+			 "43": {name: "Metano",                abrv:"Ch4",   unidad:" ", descripcion:"El metano es uno de los principales gases del efecto invernadero, su efecto negativo sobre el calentamiento del planeta es 21 veces mayor que el del dióxido de carbono. El metano se produce por fuentes naturales.", efectos:"El metano no es tóxico y no es peligroso si se inhala en pequeñas cantidades; sin embargo, si una gran cantidad de gas natural o metano desplaza el aire, la falta de oxígeno podría provocar asfixia."},
 			 "44": {name: "Hidrocarburos no metanicos (hexano)", abrv:"NMHC", unidad:"mg/m3", descripcion:"El n-hexano es un sustancia química elaborada a partir del petróleo crudo. El n-hexano puro es un líquido incoloro con un olor ligeramente desagradable. Se evapora fácilmente en el aire y se disuelve muy poco en el agua.", efectos:"Esta sustancia puede causar efectos sobre: el sistema nervioso, generar irritación en las vías respiratorias, producir vértigo, somnolencia, dolor de cabeza, dificultad al respirar."}},
 onLoad:[],
 getLimite : function(magnitud){
@@ -328,8 +328,10 @@ filterBySignificantValues:function(values){
 	}
 	return result;
 },
-filterByZone:function(zoneName, lines){
-	var st=this.zonas[zoneName];
+filterByZones:function(zoneNames, lines){
+	var st=[]
+	for(var i=0; i<zoneNames.length; i++) for(var i2 in this.zonas[zoneNames[i]]) st.push(this.zonas[zoneNames[i]][i2]);
+	info(zoneNames);
 	info(st);
 	var result=[];
 	if(st!=null && st.length>0){
@@ -338,7 +340,7 @@ filterByZone:function(zoneName, lines){
 			for(var j=0; j<lines.length; j++) if(lines[j].station==s) result.push(lines[j]);
 		}
 	}
-	info(result.length+' zones '+zoneName+' in '+lines.length+' lines found');
+	info(result.length+' zones '+zoneNames.length+' in '+lines.length+' lines found');
 	return result;
 },
 

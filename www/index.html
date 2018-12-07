@@ -8,6 +8,7 @@
 		<!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
 		<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' gap:; style-src 'self' 'unsafe-inline'; media-src *" />
 		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<link rel="stylesheet" type="text/css" href="css/toggleButton.css" />
 		<script type="text/javascript" src="js/fastclick.js"></script>
 		<script type="text/javascript" src="js/p5/p5.min.js"></script>
 		<script type="text/javascript" src="js/p5/p5.dom.min.js"></script>
@@ -15,19 +16,60 @@
 		<script type="text/javascript" src="js/charts.js"></script>
 		<!--<script type="text/javascript" src="js/window.js"></script>-->
 		<script type="text/javascript" src="js/p1.js"></script>
+		<script type="text/javascript" src="js/hammer.min.js"></script>
+		<!--<script type="text/javascript" src="js/swipe.js"></script>-->
 		<!--<title>Madrid Calidad del Aire</title>-->
 	</head>
 	<body onload="app.initialize()" onresize="resizedP1();">
 		<!--<h1>Calidad del Aire de Madrid</h1>-->
-		<h1 id="titulo">titulo de titulo</h1>
-		<div id='p1'  width="100%" height="100%" > <!--onclick="p1Clicked();">-->
-			<svg id="svg" width="100%" height="50%" minHeight="3000px" onclick="p1Clicked();" ></svg>
-			<div id="cuadro" width="100%" height="50%" ></div>
-			<button class="boton" onclick="contaminantesClicked();">Contaminantes</button>
+		<!--<h1 style="font-family:script">pollutio</h1>-->
+		<div style="height:4%; text-align:center; margin: 3px 0;"><img src="img/pollutio.jpg" height="100%" /></div>
+		<div id='p1' width="100%" height="100%" > <!--onclick="p1Clicked();">-->
+			<div id='p1Izq'>
+				<div id="titulo" style="position: absolute; left:30px; top:33%;">titulo de titulo</div>
+				<svg id="svg" width="100%" height="50%" minHeight="3000px" ></svg>
+				<div id="cuadro" width="100%" height="50%" ></div>
+				<button class="boton" onclick="contaminantesClicked();">Contaminantes</button>
+			</div>
+			<div id='p1Der' style="margin:10px;text-transform:none;display:none;">
+				<div style="color:LightCoral;">
+				<center>Un poquito de ayuda en el manejo de la app</center>
+				<p id="pinicial" class="general" onclick="helpClicked(this);">Pantalla inicial</p>
+				<div id="pinicialcontent" style="display:none;font-size: 1.5em;">
+					<p>En la pantalla inicial aparece un mapa, un cuadro de colores y un botón con el texto "contaminantes"</p>
+					<p>En el mapa se muestran las 5 zonas en las que se divide la ciudad de Madrid. Cada una aparecerá con un color según el grado de contaminación que haya en esa zona. Si aparece en gris es porque el valor no se puede establecer, bien porque no hay datos o porque los contaminantes con datos medidos en esa zona no tienen establecidos valores límites. Basta que exista al menos un contaminante con valores limite para que aparezca coloreados de verde, amarillo, naranja o rojo.<br />
+					   Si pulsas sobre una zona te llevará a la pantalla de gráficos donde se mostrarán filtrados por las estaciones de la zona seleccionada.</p>
+					<p>En el cuadro de contaminantes aparecen solo los contaminantes con valores limites establecidos y el grado de proximidad a este valor según el color que tengan para cada una de las 5 zonas de Madrid<br />
+					   Si pulsas en cualquier columna de la tabla, se mostrará el panel de gráficos filtrando por el contaminante seleccionado</p>
+					<p>En la pantalla de gráficos siempre podrás cambiar de zona, contaminante y otros valores independientemente de cómo hayas entrado en la misma. Es decir, aunque hayas seleccionado un contaminante en el cuadro de contaminantes y en el gráfico solo te aparece éste, luego lo puedes cambiar en el gráfico pulsando sobre el nombre del contaminante que se muestra.</p>
+					<p class="titulillo">Desde el mapa de Madrid</p>
+					<p>Accedes a la pantalla de gráficos filtrando por la zona seleccionada.</p>
+					<p class="titulillo">Desde el cuadro de contaminantes</p>
+					<p>Accedes a la pantalla de gráficos filtrando por el contaminante seleccionado (según la columna pulsada).</p>
+					<p class="titulillo">Botón Contaminantes</p>
+					<p>Este botón te lleva a la pantalla de Contaminantes donde podrás obtener información general de cada contaminantes y detallada según los valores de muestreo de las estaciones de Madrid</p>
+				</div>
+				<p id="pgraficos" class="general" onclick="helpClicked(this);">Pantalla de Gráficos</p>
+				<div id="pgraficoscontent" style="display:none;font-size: 1.5em;">
+					<p>En la pantalla de los gráficos aparecen dos. El de abajo lo puedes eliminar pulsando el aspa (x) y lo puedes restaurar pulsando sobre el botón "+". Dos gráficos te puede resultar útil para comparar valores entre estaciones o gráficos distintos</p>
+					<p>Para cambiar el tamaño de la letra tienes un deslizador arriba a la izquierda</p>
+					<p>Tanto el contaminante que aparece en el gráfico, como las estaciones se pueden seleccionar pulsando sobre la misma etiqueta (arriba a la izquierda del gráfico: debajo del deslizador)</p>
+					<p class="titulillo">Tipos de gráfico</p>
+					<p>A la derecha de cada gráfico puedes cambiar de tipo de grafico a través de 4 botones: Tarta, Area, Linea y Barras</p>
+					<p>La gráfica tipo tarta siempre te mostrará los valores máximos de las estaciones seleccionadas y la hora en la que se produjo.</p>
+				</div>
+				<p id="pcontaminantes" class="general" onclick="helpClicked(this);">Pantalla Contaminantes</p>
+				<div id="pcontaminantescontent" style="display:none;font-size: 1.5em;">
+					<p>Pulsando sobre cada contaminante se muestra información genérica del mismo. Algunos contaminantes tienen establecidos unos valores límites o de información para la salud humana, en este caso se muestran junto a un código de colores que ayude a una mejor visualización. El rojo significará que supera el valor máximo arbitrariamente establecido por "pollutio". Verde será el color mas alejado del valor máximo. Si no hay valores límites se establecidos para el contaminante, todos los valores del dia se muestran en gris.</p>
+					<p>A continuación se muestra un cuadro con los valores máximos, minimos y medios para el contaminante de todas las estaciones. Pulsando sobre cada medida te aparecerá una tabla con el detalle de la misma en cada estación. Las estaciones aparecen siempre ordenadas de menor a mayor valor, indicándose la zona en la que se encuentran.</p>
+					<p></p>
+				</div>
+				</div>
+			</div>
 		</div>
 		<div id='contaminantes' style='display:none'></div>
 		<div id='cuerpo' style='display:none'>
-			<div id='p1'></div>
+			
 			<div id='p2'> <!-- style='display:none'>-->
 				<div id='pie'>
 					<div id='pieChart'></div>

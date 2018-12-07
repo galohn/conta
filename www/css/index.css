@@ -196,3 +196,8 @@ h1 {
 	border-left:60px solid white; 
 	border-right:60px solid white;
 }
+
+.titulillo{
+	color: white;
+	background-image: linear-gradient(to right, gray, lightGray);
+}
