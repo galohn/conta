@@ -160,11 +160,13 @@ p.doOnMousePress = function () {
 		info('--------------');
 		var str='', i=0;
 		for(mag in data.magnitudes){
+			ids.mag.push(mag.abrv);
+			var colorMag=getMagnitudeColor(data.magnitudes[mag]);
 			if(data.filterByMagnitude(mag, lines).length>0){
 				var dentro=data.magnitudes[mag].abrv+" : "+data.magnitudes[mag].name;
 				//str+='<div onclick="'+extVName+'.setMagnitud(\''+mag+'\');" style="background-color:'+colors[i++]+'">'+data.magnitudes[mag].name+'</div>'
 				//str+=html('div',{onclick: extVName+'.setMagnitud(\''+mag+'\');', style:"background-color:DarkSalmon"},dentro);
-				str+=div({onclick: extVName+'.setMagnitud(\''+mag+'\');', "class":"mini-boton"},dentro);
+				str+=div({onclick: extVName+'.setMagnitud(\''+mag+'\');', "class":"mini-boton",style:backColor(colorMag)},dentro);
 			}
 		}
 		str=div({id:"myDropdown",'class':"show"},str);
@@ -513,6 +515,7 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 	this.showContaminante(cont);
 	this.showFilter(filterTxt);
 	this.showMenu();
+	var lastIdx = data.maxIdxValueWithoutValue(lines);
 	var colores=isArea?colors:['yellow','red','white','LawnGreen'];
 	var limite = data.getLimite(data.magnitudes[contaminante.code]).limite;
 	var maxValue=Math.max(data.maxValue(lines), limite);
@@ -537,7 +540,8 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 			for(var i=0; i<vals.length; i++){
 				if(vals[i]!=-1){
 					var yValue = vals[i]==-1?yMin:p.map(vals[i], 0, maxValue /*line.values[line.maxHour]*/, yMin, yMax);
-					var xValue = p.map(i, 0, vals.length-1, xMin, xMax);
+					//var xValue = p.map(i, 0, vals.length-1, xMin, xMax);
+					var xValue = p.map(i, 0, lastIdx-1, xMin, xMax);
 					//p.vertex(xValue, yValue);
 					values.push({x:xValue, y:yValue, value:vals[i], hour:i});
 					

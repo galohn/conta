@@ -119,6 +119,10 @@ function getMapa(){
 	info("triangulo atras es "+trianguloAtras("goToP1Der()"));
 	return mapa+trianguloAtras("goToP1Der()");
 }
+function getMagnitudeColor(mag){
+	var linesByMag=data.filterByMagnitude(mag.code, data.lines);
+	return getStyleLines(linesByMag);
+}
 function getCuadro(){
 	var mag=[];
 	var fila1=td();
@@ -245,7 +249,8 @@ function infoMagnitud(mag, lines){
 	//info(str);
 	///
 	ids.mag.push(mag.abrv);
-	return	div({id:mag.abrv+"1","class":"general",onclick:"clickMag('"+mag.abrv+"')"},mag.name+" ("+mag.abrv+")")+
+	var colorMag=getMagnitudeColor(mag);
+	return	div({id:mag.abrv+"1","class":"general",style:backColor(colorMag),onclick:"clickMag('"+mag.abrv+"')"},mag.name+" ("+mag.abrv+")")+
 			div({id:mag.abrv, "class":"oculto", style:"font-size: 1.2em;"},str);
 }
 function lpad(str, padString, length) {

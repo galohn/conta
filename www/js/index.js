@@ -19,6 +19,8 @@
 var app = {
 	// Application Constructor
 	initialize: function() {
+		var isAndroid = (/(android)/i.test(navigator.userAgent));
+		info("isAndroid="+isAndroid);
 		this.bindEvents();
 	},
 	// Bind Event Listeners
@@ -41,11 +43,26 @@ var app = {
 	//
 	// The scope of 'this' is the event. In order to call the 'receivedEvent'
 	// function, we must explicitly call 'app.receivedEvent(...);'
+	removeOnDeviceReady: function(){
+		info("limpio ondeviceready:");
+		try{
+			document.removeEventListener('deviceready', app.onDeviceReady);
+		}catch(err){
+			info('Error: '+err.message);
+		}
+		info("limpiado ondeviceready:");
+	},
 	onDeviceReady: function() {
-		//document.removeEventListener('deviceready', onDeviceReady, false);
+		app.removeOnDeviceReady();
 		init();
 		info("Set AdMobAds options:");
-		info(!!admob);
+		//info(!!admob);
+		if(typeof admob == 'undefined'){ info('admob is undefined') }else info('admob is OK');
+		if(typeof AdMob == 'undefined'){ info('AdMob is undefined') }else info('AdMob is OK');
+		if(typeof window.admob == 'undefined'){ info('admob is undefined') }else info('admob is OK'); // -------- este 
+		if(typeof window.AdMob == 'undefined'){ info('AdMob is undefined') }else info('AdMob is OK');
+		if(typeof document.admob == 'undefined'){ info('admob is undefined') }else info('admob is OK');
+		if(typeof document.AdMob == 'undefined'){ info('AdMob is undefined') }else info('AdMob is OK');
 		info(window.admob);
 		info(admob);
 		info("puglins:");
@@ -60,12 +77,15 @@ var app = {
 			//tappxIdiOS:           "/XXXXXXXXX/Pub-XXXX-iOS-IIII",            // Optional
 			//tappxIdAndroid:       "/XXXXXXXXX/Pub-XXXX-Android-AAAA",        // Optional
 			//tappxShare:           0.5                                        // Optional
-			,bannerAtTop: false
-			,overlap: false
-			,isTesting: true
+			,bannerAtTop: false // set to true, to put banner at top
+			,overlap: false // set to true, to allow banner overlap webview
+			,isTesting: true // receiving test ads (do not test with real ads as your account will be banned)
+			,autoShowBanner: true // auto show banners ad when loaded
 		});
 		info("creando banner:");
-		admob.createBannerView();
+		admob.createBannerView(function (){}, function (e) {
+			info(JSON.stringify(e));
+		});
 		info('banner puesto');
 		app.receivedEvent('deviceready');
 	},
