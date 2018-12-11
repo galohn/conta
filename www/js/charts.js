@@ -30,7 +30,7 @@ p.setup = function() {
   p.textFont(font);
   contaminante.code=10;
   
-  var canva=p.createCanvas(p.windowWidth, p.windowHeight/2.3);
+  var canva=p.createCanvas(p.windowWidth, p.windowHeight/2.2);
   debug(canva);
   //var canva=p.createCanvas(p._userNode.clientWidth, p._userNode.clientHeight);
   //canva.parent('pieChart');
@@ -51,7 +51,7 @@ p.getTextSize = function(){
 }
 
 p.windowResized = function () {
-  p.resizeCanvas(window.innerWidth, (window.innerHeight/2.3)*(doubleSize?2:1));
+  p.resizeCanvas(window.innerWidth, (window.innerHeight/2.2)*(doubleSize?2:1));
   lastLinesLength=lines.length-1;
   this.setMenu();
   //info('lastLinesLength=lines.length-1'+lastLinesLength+' '+lines.length);
