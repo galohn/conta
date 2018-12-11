@@ -19,6 +19,7 @@
 var app = {
 	// Application Constructor
 	initialize: function() {
+		p1Init();
 		var isAndroid = (/(android)/i.test(navigator.userAgent));
 		info("isAndroid="+isAndroid);
 		this.bindEvents();
@@ -28,7 +29,11 @@ var app = {
 	// Bind any events that are required on startup. Common events are:
 	// 'load', 'deviceready', 'offline', and 'online'.
 	bindEvents: function() {
-		document.addEventListener('deviceready', this.onDeviceReady, false);
+		if ((/(ipad|iphone|ipod|android)/i.test(navigator.userAgent))) {
+			document.addEventListener('deviceready', this.onDeviceReady, false);
+		} else {
+			app.onDeviceReady();
+		}
 		var zona = document.getElementById('p1');
 		var hammer = new Hammer(zona);
 
@@ -38,6 +43,34 @@ var app = {
 				if(ev.direction==4){showP1();}//zona.className='swipe-derecha';
 			}
 		});
+	},
+	// Bind Event Listeners
+	bindAdEvents: function () {
+		if (window.admob) {
+			//document.addEventListener("orientationchange", this.onOrientationChange, false);
+			document.addEventListener(admob.events.onAdLoaded, this.onAdLoaded, false);
+			document.addEventListener(admob.events.onAdFailedToLoad, this.onAdFailedToLoad, false);
+			document.addEventListener(admob.events.onAdOpened, function (e) { }, false);
+			document.addEventListener(admob.events.onAdClosed, function (e) { }, false);
+			document.addEventListener(admob.events.onAdLeftApplication, function (e) { }, false);
+			document.addEventListener(admob.events.onInAppPurchaseRequested, function (e) { }, false);
+		} else {
+			info('cordova-admob plugin not ready.\nAre you in a desktop browser? It won\'t work...');
+		}
+	},
+	onAdLoaded: function (e) {
+		app.showProgress(false);
+		if (window.admob && e.adType === window.admob.AD_TYPE.INTERSTITIAL) {
+			if (app.autoShowInterstitial) {
+				window.admob.showInterstitialAd();
+			} else {
+				info("Interstitial is available. Click on 'Show Interstitial' to show it.");
+			}
+		}
+	},
+	onAdFailedToLoad: function (e) {
+		app.showProgress(false);
+		info("Could not load ad: " + JSON.stringify(e));
 	},
 	// deviceready Event Handler
 	//
@@ -50,7 +83,7 @@ var app = {
 		}catch(err){
 			info('Error: '+err.message);
 		}
-		info("limpiado ondeviceready:");
+		info("limpiado ondeviceready.");
 	},
 	onDeviceReady: function() {
 		app.removeOnDeviceReady();
@@ -63,49 +96,60 @@ var app = {
 		if(typeof window.AdMob == 'undefined'){ info('AdMob is undefined') }else info('AdMob is OK');
 		if(typeof document.admob == 'undefined'){ info('admob is undefined') }else info('admob is OK');
 		if(typeof document.AdMob == 'undefined'){ info('AdMob is undefined') }else info('AdMob is OK');
-		info(window.admob);
-		info(admob);
-		info("puglins:");
-		info(window.plugins);
-		info("puglins de admob:");
-		info(window.plugins.AdMob);
-		info(window.plugins.admob);
-		info("admob setOptions:");
-		admob.setOptions({
-			publisherId:          "ca-app-pub-9862323093910331~8860637734"  // Required ca-app-pub-9862323093910331/8933871494
-			//interstitialAdId:     "ca-app-pub-XXXXXXXXXXXXXXXX/IIIIIIIIII",  // Optional
-			//tappxIdiOS:           "/XXXXXXXXX/Pub-XXXX-iOS-IIII",            // Optional
-			//tappxIdAndroid:       "/XXXXXXXXX/Pub-XXXX-Android-AAAA",        // Optional
-			//tappxShare:           0.5                                        // Optional
-			,bannerAtTop: false // set to true, to put banner at top
-			,overlap: false // set to true, to allow banner overlap webview
-			,isTesting: true // receiving test ads (do not test with real ads as your account will be banned)
-			,autoShowBanner: true // auto show banners ad when loaded
-		});
-		info("creando banner:");
-		admob.createBannerView(function (){}, function (e) {
-			info(JSON.stringify(e));
-		});
-		info('banner puesto');
+		if(window.plugins){
+			info("plugins: "+JSON.stringify(window.plugins));
+			//info(window.plugins.AdMob);
+			//info(window.plugins.admob);
+		}
+		window.setInterval(recurrente, 60*1000);
+		if(window.admob){
+			app.bindAdEvents();
+			info(admob);
+			info("admob setOptions:");
+			admob.setOptions({
+				publisherId:          "ca-app-pub-9862323093910331~8860637734"  // Required ca-app-pub-9862323093910331/8933871494
+				//interstitialAdId:     "ca-app-pub-XXXXXXXXXXXXXXXX/IIIIIIIIII",  // Optional
+				//tappxIdiOS:           "/XXXXXXXXX/Pub-XXXX-iOS-IIII",            // Optional
+				//tappxIdAndroid:       "/XXXXXXXXX/Pub-XXXX-Android-AAAA",        // Optional
+				//tappxShare:           0.5                                        // Optional
+				,bannerAtTop: false // set to true, to put banner at top
+				,overlap: false // set to true, to allow banner overlap webview
+				,isTesting: true // receiving test ads (do not test with real ads as your account will be banned)
+				,autoShowBanner: true // auto show banners ad when loaded
+			});
+			info("creando banner:");
+			admob.createBannerView(function (){}, function (e) {
+				info(JSON.stringify(e));
+			});
+			info('banner puesto');
+		}else{info("ADMOB IS NOT DEFINED");}
 		app.receivedEvent('deviceready');
 	},
 	// Update DOM on a Received Event
 	receivedEvent: function(id) {
-		var parentElement = document.getElementById(id);
+		/*var parentElement = document.getElementById(id);
 		var listeningElement = parentElement.querySelector('.listening');
 		var receivedElement = parentElement.querySelector('.received');
 
 		listeningElement.setAttribute('style', 'display:none;');
-		receivedElement.setAttribute('style', 'display:block;');
+		receivedElement.setAttribute('style', 'display:block;');*/
 
 		info('Received Event: ' + id);
 	}
 };
 
+function recurrente(){
+	info("admob="+window.admob+".");
+	data.getLines();
+}
+
 ///////////////////////
 
 function info(str){
 	console.log(str);
+}
+function debug(str){
+	//console.log(str);
 }
 
 ///////////////////////
@@ -135,18 +179,6 @@ data.onLoad.push(function(){
 	myBarP5.setExtVName("myBarP5");
 
 	p1Init();
-
-	var fecha=lines[0].day;
-	var anio=parseInt(fecha.substring(0,4));
-	var mes=parseInt(fecha.substring(4,6))-1;
-	var dia=parseInt(fecha.substring(6));
-	var myDate=new Date(anio, mes, dia);
-	const dayNames=["dom","lun","mar","mié","jue","vie","sáb"];
-	const monthNames = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
-	//var titulo="Datos del "+dia+"-"+monthNames[mes]+"-"+anio;
-	var titulo=dayNames[myDate.getDay()]+" "+dia+" "+monthNames[mes]+"<br />hasta las "+data.maxIdxValueWithoutValue(lines)+"h";
-	document.getElementById('titulo').innerHTML=html('span',{style:"text-transform:none;"},titulo);
-
 });
 
 data.getLines();
@@ -191,3 +223,22 @@ function html(e, attrs, content){ // class,style,transform,
 					atStr+=attr+'="'+attrs[attr]+'" ';
 		return '<'+e+' '+atStr+'>'+(content.length>0?'\n\t':'')+content+'</'+e+'>\n';
 	}
+
+// Initialize Leadbolt Event Listeners
+document.addEventListener('onModuleLoaded', function(e) {
+	// Ad loaded successfully
+	// Add code here to pause game and/or all media including audio
+	info("onModuleLoaded: "+JSON.stringify(e));
+});
+document.addEventListener('onModuleLoad', function(e) {
+	// Ad loaded successfully
+	// Add code here to pause game and/or all media including audio
+	info("onModuleLoad: "+JSON.stringify(e));
+});
+document.addEventListener('onModuleFailed', function(e) {
+	if(e.cached) {
+		info("onModuleFailed Fallo cache: "+JSON.stringify(e));
+	} else {
+		info("onModuleFailed Fallo display: "+JSON.stringify(e));
+	}
+});

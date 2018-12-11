@@ -31,7 +31,7 @@ var data =  {
 		   "Suroeste":    ["28079014","28079056","28079018","28079017"]},
 // https://gestiona.madrid.org/azul_internet/html/web/2_3.htm?ESTADO_MENU=2_3
  magnitudes:{"01": {name: "Dioxido de Azufre",     abrv:"SO2",   unidad:"µg/m3", mediaHoraria:{limite: 350}, mediaDiaria:{limite: 125}, descripcion:"El SO2 es un gas incoloro", efectos: "A altas concentraciones puede ser detectado por su sabor y por su olor cáustico e irritante"},
-			 "06": {name: "Monoxido de Carbono",   abrv:"CO",    unidad:"mg/m3", maximaDiaria:{limite: 10}, efectos:"El monóxido de carbono inhalado se combina con la hemoglobina de la sangre provocando la diminución de oxígeno suministrado al cuerpo. Respirar concentraciones de monóxido de carbono puede inducir dolor de cabeza, náuseas, cansancio y dificultad de pensar con claridad"},
+			 "06": {name: "Monoxido de Carbono",   abrv:"CO",    unidad:"mg/m3", maximaDiaria:{limite: 10}, descripcion:"Es un gas sin olor ni color. Se encuentra en el humo de la combustión, como lo es el expulsado por automóviles y camiones, candelabros, estufas, fogones de gas y sistemas de calefacción", efectos:"El monóxido de carbono inhalado se combina con la hemoglobina de la sangre provocando la diminución de oxígeno suministrado al cuerpo. Respirar concentraciones de monóxido de carbono puede inducir dolor de cabeza, náuseas, cansancio y dificultad de pensar con claridad"},
 			 "07": {name: "Monoxido de Nitrogeno", abrv:"NO",    unidad:"µg/m3", descripcion: "El monóxido de nitrógeno (NO) es un gas incoloro y poco soluble en agua, presente en pequeñas cantidades en los mamíferos. Está también extendido por el aire siendo producido en automóviles y plantas de energía. Se considera un agente tóxico", efectos: "El óxido nitroso (NO) se forma por reacción del nitrógeno atmosférico y del oxígeno en las cámaras de combustión de los motores, a alta temperatura y presión. En las concentraciones en que se produce no es contaminante, pero en el aire se oxida a dióxido de nitrógeno (No2)' importante elemento de la niebla fotoquímica o smog, que se produce en las grandes ciudades."},
 			 "08": {name: "Dioxido de Nitrogeno",  abrv:"NO2",   unidad:"µg/m3", mediaAnual:{limite:40}, mediaHoraria:{limite: 200, alerta: 400}, descripcion:"La química atmosférica de los óxidos de nitrógeno es muy compleja. La mayoría de las combustiones liberan sobre todo óxido nítrico, el cual se convierte fácilmente en dióxido de nitrógeno en la atmósfera. La oxidación del NO a NO2 por oxidantes atmosféricos como el ozono, ocurre rápidamente, siendo esta una de las principales rutas de producción del NO2", efectos:"Respirar altos niveles de dióxido de nitrógeno durante poco tiempo perjudica las células pulmonares."},
 			 "09": {name: "Particulas <2.5 um",    abrv:"PM2,5", unidad:"µg/m3", mediaAnual:{limite: 25}, descripcion:"Partículas de diámetro aerodinámico inferior o igual a los 2,5 micras (polvo, cenizas, hollín, partículas metálicas, cemento y polen, entre otras). Su origen está principalmente en fuentes de carácter antropogénico como las emisiones de los vehículos diesel.", efectos:"Las partículas PM2,5 tienen efectos más severos sobre la salud que las más grandes, PM10. Asimismo, su tamaño hace que sean más ligeras y por eso, generalmente, permanecen por más tiempo en el aire. Ello no sólo prolonga sus efectos, sino que facilita su transporte por el viento a grandes distancias. Las partículas PM2,5, por tanto, se pueden acumular en el sistema respiratorio y están asociadas, cada vez con mayor consistencia científica, con numerosos efectos negativos sobre la salud, como el aumento de las enfermedades respiratorias y la disminución del funcionamiento pulmonar"},
@@ -77,7 +77,7 @@ getOverflowSomeLimit : function(line){ // Devuelve el % de overflow sobre el lim
 	if('maximaDiaria' in mag) overflow = line.maxHour!=-1?line.values[line.maxHour]:0;
 	else overflow = Math.max(line.medianValue, line.avgValue);
 	if (overflow/limite.limite>.5)
-		info(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
+		debug(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
 	return overflow/limite.limite;
 },
 
@@ -153,9 +153,9 @@ setLinesFromStr : function(response){
 },
 
 removeEmptyLines : function(lines){
-	info('1 lines.length='+lines.length);
+	debug('1 lines.length='+lines.length);
 	for(var i=lines.length-1; i>=0; i--) if(this.isEmpty(lines[i])) lines.splice(i, 1);
-	info('2 lines.length='+lines.length);
+	debug('2 lines.length='+lines.length);
 	return lines;
 },
 
@@ -169,7 +169,7 @@ readTextFile : function(file){
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", file, true); // ["GET", "POST", "PUT", "DELETE"] , URL , ASYNC
     rawFile.onreadystatechange = function (){
-		info('XMLHttpRequest.onreadystatechange.status='+rawFile.status);
+		info('readTextFile XMLHttpRequest.onreadystatechange.status='+rawFile.status);
         if(rawFile.readyState === 4 && (rawFile.status === 200 || rawFile.status == 0)){
 			var allText = rawFile.responseText;
             data.setLinesFromStr(allText);
@@ -331,8 +331,8 @@ filterBySignificantValues:function(values){
 filterByZones:function(zoneNames, lines){
 	var st=[]
 	for(var i=0; i<zoneNames.length; i++) for(var i2 in this.zonas[zoneNames[i]]) st.push(this.zonas[zoneNames[i]][i2]);
-	info(zoneNames);
-	info(st);
+	debug(zoneNames);
+	debug(st);
 	var result=[];
 	if(st!=null && st.length>0){
 		for(var i=0; i<st.length; i++){
@@ -340,7 +340,7 @@ filterByZones:function(zoneNames, lines){
 			for(var j=0; j<lines.length; j++) if(lines[j].station==s) result.push(lines[j]);
 		}
 	}
-	info(result.length+' zones '+zoneNames.length+' in '+lines.length+' lines found');
+	debug(result.length+' zones '+zoneNames.length+' in '+lines.length+' lines found');
 	return result;
 },
 

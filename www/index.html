@@ -20,13 +20,13 @@
 		<!--<script type="text/javascript" src="js/swipe.js"></script>-->
 		<!--<title>Madrid Calidad del Aire</title>-->
 	</head>
-	<body onload="app.initialize()" onresize="resizedP1();">
+	<body onresize="resizedP1();">
 		<!--<h1>Calidad del Aire de Madrid</h1>-->
 		<!--<h1 style="font-family:script">pollutio</h1>-->
 		<div style="height:4%; text-align:center; margin: 3px 0;"><img src="img/pollutio.jpg" height="100%" /></div>
 		<div id='p1' width="100%" height="100%" > <!--onclick="p1Clicked();">-->
 			<div id='p1Izq'>
-				<div id="titulo" style="position: absolute; left:30px; top:33%;">titulo de titulo</div>
+				<div id="titulo" style="position: absolute; left:30px; top:33%;">buscando<br />datos...</div>
 				<svg id="svg" width="100%" height="50%" minHeight="3000px" ></svg>
 				<div id="cuadro" width="100%" height="50%" ></div>
 				<button class="boton" onclick="contaminantesClicked();">Contaminantes</button>
@@ -53,14 +53,14 @@
 				<div id="pgraficoscontent" style="display:none;font-size: 1.5em;">
 					<p>En la pantalla de los gráficos aparecen dos. El de abajo lo puedes eliminar pulsando el aspa (x) y lo puedes restaurar pulsando sobre el botón "+". Dos gráficos te puede resultar útil para comparar valores entre estaciones o gráficos distintos</p>
 					<p>Para cambiar el tamaño de la letra tienes un deslizador arriba a la izquierda</p>
-					<p>Tanto el contaminante que aparece en el gráfico, como las estaciones se pueden seleccionar pulsando sobre la misma etiqueta (arriba a la izquierda del gráfico: debajo del deslizador)</p>
+					<p>Tanto el contaminante que aparece en el gráfico, como las estaciones, se pueden seleccionar pulsando sobre la misma etiqueta (arriba a la izquierda del gráfico: debajo del deslizador)</p>
 					<p class="titulillo">Tipos de gráfico</p>
 					<p>A la derecha de cada gráfico puedes cambiar de tipo de grafico a través de 4 botones: Tarta, Area, Linea y Barras</p>
 					<p>La gráfica tipo tarta siempre te mostrará los valores máximos de las estaciones seleccionadas y la hora en la que se produjo.</p>
 				</div>
 				<p id="pcontaminantes" class="general" onclick="helpClicked(this);">Pantalla Contaminantes</p>
 				<div id="pcontaminantescontent" style="display:none;font-size: 1.5em;">
-					<p>Pulsando sobre cada contaminante se muestra información genérica del mismo. Algunos contaminantes tienen establecidos unos valores límites o de información para la salud humana, en este caso se muestran junto a un código de colores que ayude a una mejor visualización. El rojo significará que supera el valor máximo arbitrariamente establecido por "pollutio". Verde será el color mas alejado del valor máximo. Si no hay valores límites se establecidos para el contaminante, todos los valores del dia se muestran en gris.</p>
+					<p>Pulsando sobre cada contaminante se muestra información genérica del mismo. Algunos contaminantes tienen establecidos unos valores límites o de información para la salud humana, en este caso se muestran junto a un código de colores que ayude a una mejor visualización. El rojo significará que supera el valor máximo arbitrariamente establecido por "pollutio". Verde será el color mas alejado del valor máximo. Si no hay valores límites establecidos para el contaminante, todos los valores del dia se muestran en gris.</p>
 					<p>A continuación se muestra un cuadro con los valores máximos, minimos y medios para el contaminante de todas las estaciones. Pulsando sobre cada medida te aparecerá una tabla con el detalle de la misma en cada estación. Las estaciones aparecen siempre ordenadas de menor a mayor valor, indicándose la zona en la que se encuentran.</p>
 					<p></p>
 				</div>
@@ -81,5 +81,8 @@
 		</div>
 		<script type="text/javascript" src="cordova.js"></script>
 		<script type="text/javascript" src="js/index.js"></script>
+		<script type="text/javascript">
+			app.initialize();
+		</script>
 	</body>
 </html>

@@ -31,7 +31,7 @@ p.setup = function() {
   contaminante.code=10;
   
   var canva=p.createCanvas(p.windowWidth, p.windowHeight/2.3);
-  info(canva);
+  debug(canva);
   //var canva=p.createCanvas(p._userNode.clientWidth, p._userNode.clientHeight);
   //canva.parent('pieChart');
   p.noStroke();
@@ -137,7 +137,7 @@ p.guardaZona = function(){
 	}
 }
 p.doOnMousePress = function () {
-	info('Detectado mouse pressed en '+typeChart);
+	debug('Detectado mouse pressed en '+typeChart);
 	var resized=false;
     if(p.mouseX>menu.xMin){
 		if(p.mouseY<menu.buttonHeight) p.setArea();
@@ -146,9 +146,9 @@ p.doOnMousePress = function () {
 		else if(p.mouseY<menu.buttonHeight*4) p.setPie();
 		resized=true;
 	}else if(checks.length>0){
-		info('valido checks '+checks.length);
+		debug('valido checks '+checks.length);
 		for(var i=0; i<checks.length && !resized; i++){
-			info(p.mouseX+' >= '+checks[i].x0+' '+p.mouseY+' >= '+checks[i].y0+' '+p.mouseX+' >= '+checks[i].x1+' '+p.mouseY+' >= '+checks[i].y1);
+			debug(p.mouseX+' >= '+checks[i].x0+' '+p.mouseY+' >= '+checks[i].y0+' '+p.mouseX+' >= '+checks[i].x1+' '+p.mouseY+' >= '+checks[i].y1);
 			if(p.mouseIntersectWith(checks[i])){
 				checks[i].selected=!checks[i].selected;
 				resized=true;
@@ -157,16 +157,17 @@ p.doOnMousePress = function () {
 	}
 	if (!resized && p.mouseIntersectWith(contaminante)){
 		resized=true;
-		info('--------------');
+		debug('--------------');
 		var str='', i=0;
 		for(mag in data.magnitudes){
 			ids.mag.push(mag.abrv);
 			var colorMag=getMagnitudeColor(data.magnitudes[mag]);
+			var estilo=colorOverMag[colorMag];
 			if(data.filterByMagnitude(mag, lines).length>0){
 				var dentro=data.magnitudes[mag].abrv+" : "+data.magnitudes[mag].name;
 				//str+='<div onclick="'+extVName+'.setMagnitud(\''+mag+'\');" style="background-color:'+colors[i++]+'">'+data.magnitudes[mag].name+'</div>'
 				//str+=html('div',{onclick: extVName+'.setMagnitud(\''+mag+'\');', style:"background-color:DarkSalmon"},dentro);
-				str+=div({onclick: extVName+'.setMagnitud(\''+mag+'\');', "class":"mini-boton",style:backColor(colorMag)},dentro);
+				str+=div({onclick: extVName+'.setMagnitud(\''+mag+'\');', "class":"mini-boton",style:estilo.style},dentro);
 			}
 		}
 		str=div({id:"myDropdown",'class':"show"},str);
@@ -203,13 +204,13 @@ p.doOnMousePress = function () {
 		document.getElementById('cuerpo').style.display = 'none';
 		p.seleccionaZona();
 	}
-	info(botonClose);
+	debug(botonClose);
 	if (!resized && p.mouseIntersectWith(botonClose.rect)){
-		info('boton close');
+		debug('boton close');
 		if('fn' in botonClose) botonClose.fn();
 	}
 	if (!resized && p.mouseIntersectWith(botonSuma.rect)){
-		info('boton suma');
+		debug('boton suma');
 		if('fn' in botonSuma) botonSuma.fn();
 	}
 	if(resized) p.windowResized();
@@ -229,7 +230,7 @@ p.setCnt = function(cnt){
 	typeFilterSelected.cnt=cnt;
 }
 p.setTypeFilterFn = function(code,idx){
-	info('setTypeFilter code='+code+" idx="+idx);
+	debug('setTypeFilter code='+code+" idx="+idx);
 	typeFilterSelected.tf=typeFilter[code];
 	typeFilterSelected.idxFn=idx;
 	//
@@ -261,7 +262,7 @@ p.setBar = function(){ typeChart=type.bar; return this;}
 p.setPie = function(){ typeChart=type.pie; return this;}
 
 p.redrawPie = function(){
-	info('redraw!');
+	debug('redraw!');
 	swCallAjax=true;
 }
 
@@ -286,7 +287,7 @@ p.showContaminante=function(cont){
   contaminante.x0=10; contaminante.y0=border*1.5-bounds.h; contaminante.x1=contaminante.x0 + bounds.w+10; contaminante.y1=contaminante.y0+bounds.h+8;
   //p.text(title, 10-1, (border*2)-1); y0 es arriba e y1 es abajo
   p.fill('white');
-  p.text(cont, 10+5, contaminante.y1-4); //border*1.5+4);
+  p.text(cont, 15, contaminante.y1-4); //border*1.5+4);
 }
 
 p.setAddBoton=function(fn){
@@ -336,8 +337,8 @@ p.showFilter=function(filterTxt){ // origin [0, 0] is the coordinate in the uppe
   filterType.x1=filterType.x0 + bounds.w+10; filterType.y0=filterType.y1-bounds.h-10; // y0 es arriba
   filterType.w=filterType.x1-filterType.x0;
   filterType.h=filterType.y1-filterType.y0;
-  info(filterType);
-  info(bounds);
+  debug(filterType);
+  debug(bounds);
   p.rect(filterType.x0, filterType.y0, filterType.w, filterType.h);
   //p.text(title, 10-1, (border*2)-1);
   p.fill('white');
@@ -357,6 +358,7 @@ p.pieChart = function(cont, filterTxt, lines) {
   this.showContaminante(cont);
   this.showFilter(filterTxt);
   this.showMenu();
+  var labels=[];
   for (var i = 0; i < lines.length; i++) {
 	var lin = lines[i];
 	var estacion=data.estaciones[lin.station];
@@ -374,14 +376,19 @@ p.pieChart = function(cont, filterTxt, lines) {
 	var radio_ = diameter/2;
 	var x0=xy.x + radio_*p.cos(angle);
 	var y0=xy.y + radio_*p.sin(angle);
-	var str = estacion.name+'\r\n'+data.getZona(lin)+' - '+lin.maxHour+'h ['+(lin.maxHour==-1?0:lin.values[lin.maxHour])+(data.magnitudes[lin.magnitude].unidad)+']';
+	var str = ((this.getTextSize()>16&&typeFilterSelected.cnt<=4)||(this.getTextSize()>12&&typeFilterSelected.cnt>4))?
+		estacion.name:estacion.name+'\r\n'+data.getZona(lin)+'\r\n'+lin.maxHour+'h ['+(lin.maxHour==-1?0:lin.values[lin.maxHour])+(data.magnitudes[lin.magnitude].unidad)+']';
 	//str=str.replace(' ','\r\n');
 	p.textSize(this.getTextSize());
 	if(x0<xy.x) p.textAlign(p.CENTER);
 	else p.textAlign(p.LEFT);
 	if(y0>xy.y) y0-=20;
-	this.shadowText(str, x0-20, y0, 'white', 'black');
+	//this.shadowText(str, x0-20, y0, 'white', 'black');
+	labels.push({str:str, x0:x0-20, y0:y0});
 	lastAngle += p.radians(angles[i]);
+  }
+  for(var i=0; i<labels.length; i++){
+	  this.shadowText(labels[i].str, labels[i].x0, labels[i].y0, 'white', 'black');
   }
   p.showClose();
   p.showBotonSuma();
@@ -402,7 +409,7 @@ p.getColor = function(i, data){
 	return fillFocus;
 }
 
-p.pieCenter = function(){ return {x:p.width/2, y:p.height/2};}
+p.pieCenter = function(){ return {x:(p.width-menu.width)/2, y:p.height/2};}
 
 p.getAngles = function(lines){
 	// calcula el % de angulo en funcion de la suma de los maxValues
@@ -490,7 +497,7 @@ p.drawLimite = function(limite, maxValue, margin, w, yMin, yMax, unidad){
 	p.push();
 	if(limite>0){
 		var value = p.map(limite, 0, maxValue, yMin, yMax);
-		info('limite='+limite+' maxValue='+maxValue+' entre '+yMax+'-'+yMin+'='+value);
+		debug('limite='+limite+' maxValue='+maxValue+' entre '+yMax+'-'+yMin+'='+value);
 		p.stroke('red');
 		p.line(margin, value, margin+w, value);
 		
