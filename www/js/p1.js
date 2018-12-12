@@ -171,6 +171,7 @@ function backColor(color){return "background-color:"+color+";";}
 
 function infoMagnitud(mag, lines){
 	var valor=null;
+	var hasDecimals=data.hasDecimals(lines);
 	var li = data.getLimite(mag);
 	var campos={maximaDiaria:"Máxima diaria", mediaHoraria:"Media horaria", mediaDiaria:"Media diaria", mediaAnual:"Media anual"};
 	var limites={limite:"Límite", critico:"Crítico", alerta:"de alerta", informacion:"de información", objetivo:"objetivo"};
@@ -226,8 +227,8 @@ function infoMagnitud(mag, lines){
 			var max=linesO[0], min=linesO[linesO.length-1];
 			trs+= tr(
 				td({id:mag.abrv+klo, "class":"mini-boton", onclick:"clickValor('"+mag.abrv+klo+"')"},klo)+
-				td(data.estaciones[max.station].name+br()+spanColoreado(mag,max[property])+' '+sufijo)+
-				td(data.estaciones[min.station].name+br()+spanColoreado(mag,min[property])+' '+sufijo));
+				td(data.estaciones[max.station].name+br()+spanColoreado(mag,max[property], hasDecimals)+' '+sufijo)+
+				td(data.estaciones[min.station].name+br()+spanColoreado(mag,min[property], hasDecimals)+' '+sufijo));
 				ids.valor.push(mag.abrv+klo);
 			var trs2=tr(td({colspan:6,style:backColor('DeepSkyBlue')+"color:white;"+textAlign(Center)},klo));
 			for(var i in linesO){
@@ -236,7 +237,7 @@ function infoMagnitud(mag, lines){
 				trs2+=tr(
 					td(data.estaciones[lin.station].name)+
 					td(peque, data.getZonaEstacion(lin.station))+
-					td({style:textAlign(Right)},spanColoreado(mag, lin[property]))+
+					td({style:textAlign(Right)},spanColoreado(mag, lin[property], hasDecimals))+
 					td(peque, sufijo)+
 					td(peque, (hora!=null)?'a las ':' de 0h')+
 					td({style:textAlign(Right)},(hora!=null)?(lin[hora]+"h"):("a "+h+"h")));
@@ -260,8 +261,8 @@ function lpad(str, padString, length) {
         str = padString + str;
     return str;
 }
-function spanColoreado(mag, valor){
-	var v = Math.round(valor);
+function spanColoreado(mag, valor, hasDecimals){
+	var v = hasDecimals?(Math.round(valor*10)/10):Math.round(valor);
 	return html('span',getOverColour(mag, v),v);
 }
 var ids={valor:[], mag:[]};
@@ -319,8 +320,10 @@ function infoContaminantes(){
 	for(var attr in data.magnitudes){
 		var mag=data.magnitudes[attr]; //name, abrv, unidad, (maximaDiaria|mediaHoraria|mediaDiaria|mediaAnual)(limite|critico|alerta|informacion|objetivo), descripcion, efectos
 		var lines=data.filterByMagnitude(attr, data.lines);
-		var stat=data.getStatistics(lines); // stat={value:{}, avg:{}, median:{}, cntValues:{}}; // object
-		str += infoMagnitud(mag, lines);
+		if(lines.length>0){
+			var stat=data.getStatistics(lines); // stat={value:{}, avg:{}, median:{}, cntValues:{}}; // object
+			str += infoMagnitud(mag, lines);
+		}
 	}
 	debug("infoContaminantes:");
 	//debug(str);

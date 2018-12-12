@@ -62,7 +62,7 @@ getLimite : function(magnitud){
 	else if(valor!=null && 'critico' in valor.valor) {valor.limite=valor.valor.critico; valor.over='critico'}
 	else if(valor!=null && 'alerta' in valor.valor) {valor.limite=valor.valor.alerta; valor.over='alerta'}
 	else if(valor!=null && 'informacion' in valor.valor) {valor.limite=valor.valor.informacion*1.5; valor.over='informacion'}
-	else if(valor!=null && 'objetivo' in valor.valor) {valor.limite=valor.valor.objetivo*2; valor.over='objetivo'}
+	else if(valor!=null && 'objetivo' in valor.valor) {valor.limite=valor.valor.objetivo*1.5; valor.over='objetivo'}
 	else valor={limite: -1};
 	//info('limite en '+magnitud.name+'='+valor.limite);
 	return valor;
@@ -178,13 +178,21 @@ readTextFile : function(file){
     rawFile.send(null);
 },
 
+hasDecimals : function(lines){
+	for(var i=0; i<lines.length; i++)
+		if(lines[i].hasDecimals) return true;
+	return false;
+},
+
 setStatistics : function(line){
 	var maxValue=-1, minValue=999999999999, sumValues=0, cntValues=0;
 	var maxHour=-1, minHour=-1;
+	line.hasDecimals=false;
 	for(var i=0; i<line.values.length; i++){
 		if(line.values[i]>maxValue){maxValue=line.values[i]; maxHour=i;}
 		if(line.values[i]<minValue && line.values[i]!=-1){minValue=line.values[i]; minHour=i;}
 		if(line.values[i]!=-1) {sumValues+=line.values[i]; cntValues++}
+		line.hasDecimals=line.hasDecimals||(line.values[i]!=Math.round(line.values[i]));
 	}
 	line.maxHour=maxHour;
 	line.minHour=minHour;

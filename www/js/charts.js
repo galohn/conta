@@ -13,7 +13,7 @@ var type={area:0, line:1, bar:2, pie:3};
 var typeFilter={max:{txt:"valor máximo", fn:[data.sortAscByMax,data.sortDescByMax]},
 				min:{txt:"valor mínimo", fn:[data.sortAscByMin,data.sortDescByMin]},
 				avg:{txt:"media", fn:[data.sortAscByAvg,data.sortDescByAvg]},
-				cnt:{txt:"nº mediciones", fn:[data.sortAscByCntValues,data.sortDescByCntValues]},
+//				cnt:{txt:"nº mediciones", fn:[data.sortAscByCntValues,data.sortDescByCntValues]},
 				median:{txt:"mediana", fn:[data.sortAscByMedian,data.sortDescByMedian]}};
 var typeChart=type.area;
 var typeFilterSelected={tf: typeFilter.max, idxFn:0, cnt:3, zones:["M-30","NE","NO","SE","SO"]};
@@ -111,7 +111,7 @@ p.seleccionaZonaPanel = function(){
 				html('label',{"class":"tgl-btn", "data-tg-off":"Off", "data-tg-on":"On", "for":"cb"+z.abrv})
 			);
 	}
-	var ul=table(tr({width:"100%"}, td("Zonas:")+td({width:"100%"}, html('ul',{"class":"tg-list"}, lis))));
+	var ul=table(tr({width:"100%"}, td({style:"font-size:0.75em;"},"Zo<br />nas:")+td({width:"100%"}, html('ul',{"class":"tg-list"}, lis))));
 	return ul;
 }
 p.seleccionaZona = function(){
@@ -184,18 +184,18 @@ p.doOnMousePress = function () {
 			var tf = typeFilter[attr];
 			//str+='<div onclick="'+extVName+'.setTypeFilter(\''+idx+'\');" style="background-color:'+colors[i++]+'">'+tf.txt+'</div>'
 			//str+=html('div',{onclick: extVName+'.setTypeFilter(\''+idx+'\');', style:"background-color:DarkSalmon"}, tf.txt);
-			trs+=tr({style:"text-transform:capitalize"},
+			trs+=tr({style:"text-transform:capitalize;font-size:.9em;height:2.2em"},
 					td({style:backColor('DarkSalmon')}, tf.txt)+
-					td(p.attrsTypeFilter(attr, 0), '+ Alto')+
-					td(p.attrsTypeFilter(attr, 1), '+ Bajo')
+					td(p.attrsTypeFilter(attr, 0), 'Mayor')+
+					td(p.attrsTypeFilter(attr, 1), 'Menor')
 				);
 		}
 		var tds=""
 		for(var i=0; i<6; i++) tds+=td(p.attrsCnt(i+1),i+1);
-		var str=table({width:"96%"},tr(td({colspan:3},"Selecciona función:"))+trs)+
+		var str=table({width:"100%"},tr(td({colspan:3},"Selecciona función:"))+trs)+
 			p.seleccionaZonaPanel()+
-			table({width:"96%"},tr(td({colspan:6},'Selecciona nº valores:'))+tr(tds))+
-		    div({onclick:extVName+".setTypeFilter()","class":"mini-boton",style:textAlign(Center)},"Hecho!");
+			table({width:"100%"},tr(td({width:"10%",style:"font-size:0.75em;"+backColor('lightgray')},'nº de<br />valores:')+tds))+
+		    div({onclick:extVName+".setTypeFilter()","class":"mini-boton",style:textAlign(Center)+";font-size:.9em"},"Hecho!");
 		str=div({id:"myDropdown",'class':"show"},div(str));
 		
 		var menuMag=document.getElementById('menu');
