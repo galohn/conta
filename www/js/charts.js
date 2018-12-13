@@ -111,7 +111,7 @@ p.seleccionaZonaPanel = function(){
 				html('label',{"class":"tgl-btn", "data-tg-off":"Off", "data-tg-on":"On", "for":"cb"+z.abrv})
 			);
 	}
-	var ul=table(tr({width:"100%"}, td({style:"font-size:0.75em;"},"Zo<br />nas:")+td({width:"100%"}, html('ul',{"class":"tg-list"}, lis))));
+	var ul=table({style:"margin:15px 0px;"},tr({width:"100%"}, td({style:"font-size:0.65em;"+backColor('lightgray')},"Zo<br />nas:")+td({width:"100%"}, html('ul',{"class":"tg-list"}, lis))));
 	return ul;
 }
 p.seleccionaZona = function(){
@@ -192,7 +192,7 @@ p.doOnMousePress = function () {
 		}
 		var tds=""
 		for(var i=0; i<6; i++) tds+=td(p.attrsCnt(i+1),i+1);
-		var str=table({width:"100%"},tr(td({colspan:3},"Selecciona función:"))+trs)+
+		var str=table({width:"100%"},tr(td({colspan:3,style:"font-size:0.75em;"},"Selecciona función:"))+trs)+
 			p.seleccionaZonaPanel()+
 			table({width:"100%"},tr(td({width:"10%",style:"font-size:0.75em;"+backColor('lightgray')},'nº de<br />valores:')+tds))+
 		    div({onclick:extVName+".setTypeFilter()","class":"mini-boton",style:textAlign(Center)+";font-size:.9em"},"Hecho!");
