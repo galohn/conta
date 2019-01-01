@@ -17,8 +17,9 @@ var typeFilter={max:{txt:"valor máximo", fn:[data.sortAscByMax,data.sortDescByM
 				median:{txt:"mediana", fn:[data.sortAscByMedian,data.sortDescByMedian]}};
 var typeChart=type.area;
 var typeFilterSelected={tf: typeFilter.max, idxFn:0, cnt:3, zones:["M-30","NE","NO","SE","SO"]};
-var textSizeSlider, extVName;
+var textSizeSlider={value:16, max:32, min:5}, extVName;
 var font, menu={}, contaminante={}, filterType={}, botonClose={}, botonSuma={visible:false}, doubleSize=false;
+var azul='#008CBA';
 
 p.setExtVName = function(name){ extVName=name; }
 
@@ -38,16 +39,16 @@ p.setup = function() {
   //p.strokeWeight(1);
   //noLoop();  // Run once and stop
   //p.callAjax();
-  textSizeSlider = p.createSlider(6, 38, 16);
-  textSizeSlider.position(25, canva.y);
-  //info(textSizeSlider);
-  textSizeSlider.changed(function(){p.windowResized();});
   this.setMenu();
   canva.mousePressed(this.doOnMousePress);
 }
 
+p.setTextSize = function (newValue){
+	textSizeSlider.value=newValue; //textSizeSlider.value*scale;
+	p.windowResized();
+}
 p.getTextSize = function(){
-	return textSizeSlider.value();
+	return textSizeSlider.value;
 }
 
 p.windowResized = function () {
@@ -72,7 +73,7 @@ p.draw = function() {
 			lines2=data.filterByZones(p.getZoneNames(),lines2);
 			lines2=typeFilterSelected.tf.fn[typeFilterSelected.idxFn](lines2).slice(-1*typeFilterSelected.cnt);
 			var magnitude=data.magnitudes[contaminante.code].name;
-			var str = typeFilterSelected.cnt+' con '+typeFilterSelected.tf.txt+' '+(typeFilterSelected.idxFn==0?"mas alto":"mas bajo");
+			var str = typeFilterSelected.tf.txt+' '+(typeFilterSelected.idxFn==0?"mas alto":"mas bajo"); // typeFilterSelected.cnt+' con '+
 			if     (type.pie ==typeChart) p.pieChart(magnitude, str, lines2);
 			else if(type.area==typeChart) p.areaLineChart(magnitude, str, lines2, true);
 			else if(type.line==typeChart) p.areaLineChart(magnitude, str, lines2, false);
@@ -86,18 +87,23 @@ p.setMenu = function(){
 	menu.labels = ['Area','Linea','Barra','Tarta'];
 	if(!('bounds' in menu)) menu.bounds = font.textBounds(menu.labels[2], 0, border, this.getTextSize());
 	//info(p.height+'------------'+p.width);
-	menu.width = p.width/3>p.height? (border*2)+menu.bounds.w : menu.bounds.w +10;
+	var h = p.height-contaminante.y1;
+	menu.y0=contaminante.y1;
+	menu.width = p.width/3>h? (border*2)+menu.bounds.w : menu.bounds.w +10;
 	menu.xMin=p.width-menu.width;
-	menu.buttonHeight = p.height/menu.labels.length;
+	
+	menu.gap=h*(8/100);
+	menu.gaps=menu.gap*(menu.labels.length+1);
+	menu.buttonHeight = (h - menu.gaps) / menu.labels.length;
 }
 p.showMenu = function(){
 	p.push();
 	p.textAlign(p.CENTER, p.CENTER);
 	for(var i=0; i<menu.labels.length; i++){
-		p.fill(colors[colors.length-i-1]);
-		p.rect(menu.xMin, i*menu.buttonHeight, menu.width, (i+1)*menu.buttonHeight);
+		p.fill(azul);
+		p.rect(menu.xMin, menu.y0+i*menu.buttonHeight+(menu.gap*(i+1)), menu.width, menu.buttonHeight, 7);
 		p.fill('white');
-		p.text(menu.labels[i], menu.xMin+(p.width-menu.xMin)/2, i*menu.buttonHeight+((i+1)*menu.buttonHeight-i*menu.buttonHeight)/2);
+		p.text(menu.labels[i], menu.xMin+(p.width-menu.xMin)/2, menu.y0+i*menu.buttonHeight+((i+1)*menu.buttonHeight-i*menu.buttonHeight)/2+(menu.gap*(i+1)));
 	}
 	p.pop();
 }
@@ -136,14 +142,18 @@ p.guardaZona = function(){
 		if(document.getElementById("cb"+z.abrv).checked) typeFilterSelected.zones.push(z.abrv);
 	}
 }
+p.isMenuPressed = function(n){
+	return p.mouseY > menu.y0+menu.buttonHeight*(n-1)+menu.gap*n && p.mouseY<menu.y0+menu.buttonHeight*(n)+menu.gap*(n);
+}
+
 p.doOnMousePress = function () {
 	debug('Detectado mouse pressed en '+typeChart);
 	var resized=false;
     if(p.mouseX>menu.xMin){
-		if(p.mouseY<menu.buttonHeight) p.setArea();
-		else if(p.mouseY<menu.buttonHeight*2) p.setLine();
-		else if(p.mouseY<menu.buttonHeight*3) p.setBar();
-		else if(p.mouseY<menu.buttonHeight*4) p.setPie();
+		if(p.isMenuPressed(1)) p.setArea();
+		else if(p.isMenuPressed(2)) p.setLine();
+		else if(p.isMenuPressed(3)) p.setBar();
+		else if(p.isMenuPressed(4)) p.setPie();
 		resized=true;
 	}else if(checks.length>0){
 		debug('valido checks '+checks.length);
@@ -185,7 +195,7 @@ p.doOnMousePress = function () {
 			//str+='<div onclick="'+extVName+'.setTypeFilter(\''+idx+'\');" style="background-color:'+colors[i++]+'">'+tf.txt+'</div>'
 			//str+=html('div',{onclick: extVName+'.setTypeFilter(\''+idx+'\');', style:"background-color:DarkSalmon"}, tf.txt);
 			trs+=tr({style:"text-transform:capitalize;font-size:.9em;height:2.2em"},
-					td({style:backColor('DarkSalmon')}, tf.txt)+
+					td({style:backColor('GoldenRod')}, tf.txt)+ // MediumSeaGreen
 					td(p.attrsTypeFilter(attr, 0), 'Mayor')+
 					td(p.attrsTypeFilter(attr, 1), 'Menor')
 				);
@@ -281,10 +291,10 @@ p.createButton=function(txt, x, y, c1, c2){
 
 p.showContaminante=function(cont){
   p.textSize(this.getTextSize());
-  p.fill('gray');
+  p.fill(azul);
   var bounds = font.textBounds(cont, 10, 10, this.getTextSize());
-  p.rect(10, border*1.5-bounds.h, bounds.w+10, bounds.h+8);
-  contaminante.x0=10; contaminante.y0=border*1.5-bounds.h; contaminante.x1=contaminante.x0 + bounds.w+10; contaminante.y1=contaminante.y0+bounds.h+8;
+  p.rect(10, border-bounds.h, bounds.w+10, bounds.h+8, 7);
+  contaminante.x0=10; contaminante.y0=border-bounds.h; contaminante.x1=contaminante.x0 + bounds.w+10; contaminante.y1=contaminante.y0+bounds.h+8;
   //p.text(title, 10-1, (border*2)-1); y0 es arriba e y1 es abajo
   p.fill('white');
   p.text(cont, 15, contaminante.y1-4); //border*1.5+4);
@@ -302,8 +312,8 @@ p.setCloseBoton=function(fn){
 p.showClose=function(){
 	if('fn' in botonClose){
 		p.push();
-		var pad=10, size=15, x0=p.width-menu.width-pad-size, y0=pad;
-		p.fill('gray');
+		var pad=10, size=17, x0=p.width-menu.width-pad-size, y0=contaminante.y1+pad;
+		p.fill(azul);
 		p.rect(x0, y0, size, size);
 		p.stroke('white');
 		p.line(x0, y0,      x0+size, y0+size);
@@ -316,8 +326,8 @@ p.showClose=function(){
 p.showBotonSuma=function(){
 	if('fn' in botonSuma && botonSuma.visible){
 		p.push();
-		var pad=10, size=15, x0=p.width-menu.width-pad-size, y0=p.height-pad-size;
-		p.fill('gray');
+		var pad=10, size=17, x0=p.width-menu.width-pad-size, y0=p.height-pad*3-size;
+		p.fill(azul);
 		p.rect(x0, y0, size, size);
 		p.stroke('white');
 		p.line(x0, y0+size/2, x0+size, y0+size/2);
@@ -330,16 +340,16 @@ p.showBotonSuma=function(){
 p.showFilter=function(filterTxt){ // origin [0, 0] is the coordinate in the upper left of the window
   p.push();
   p.textSize(this.getTextSize());
-  p.fill('gray');
+  p.fill(azul);
   var bounds = font.textBounds(filterTxt, 20, 20, this.getTextSize());
   //p.rect(10, contaminante.y1+bounds.h+5, bounds.w+5, contaminante.y1+5);
-  filterType.x0=contaminante.x0;             filterType.y1=contaminante.y1+20+bounds.h;  // y1 es abajo
-  filterType.x1=filterType.x0 + bounds.w+10; filterType.y0=filterType.y1-bounds.h-10; // y0 es arriba
+  filterType.x0=contaminante.x1+15;          filterType.y1=contaminante.y1;  // y1 es abajo
+  filterType.x1=filterType.x0 + bounds.w+10; filterType.y0=contaminante.y0; // y0 es arriba
   filterType.w=filterType.x1-filterType.x0;
   filterType.h=filterType.y1-filterType.y0;
   debug(filterType);
   debug(bounds);
-  p.rect(filterType.x0, filterType.y0, filterType.w, filterType.h);
+  p.rect(filterType.x0, filterType.y0, filterType.w, filterType.h, 7);
   //p.text(title, 10-1, (border*2)-1);
   p.fill('white');
   //p.textAlign(p.CENTER, p.CENTER);
@@ -353,6 +363,7 @@ p.showFilter=function(filterTxt){ // origin [0, 0] is the coordinate in the uppe
 p.pieChart = function(cont, filterTxt, lines) {
   var diameter = Math.min(p.width, p.height)-border;
   if(p.height*1.6>p.width) diameter=diameter-border*3;
+  else diameter-=(contaminante.y1+border);
   var lastAngle = 0;
   var angles=p.getAngles(lines);
   this.showContaminante(cont);
@@ -381,7 +392,7 @@ p.pieChart = function(cont, filterTxt, lines) {
 	//str=str.replace(' ','\r\n');
 	p.textSize(this.getTextSize());
 	if(x0<xy.x) p.textAlign(p.CENTER);
-	else p.textAlign(p.LEFT);
+	else {p.textAlign(p.LEFT); x0-=(radio_/3);}
 	if(y0>xy.y) y0-=20;
 	//this.shadowText(str, x0-20, y0, 'white', 'black');
 	labels.push({str:str, x0:x0-20, y0:y0});
@@ -435,16 +446,18 @@ p.barChart = function(cont, filterTxt, lines){
   var lastIdx = data.maxIdxValueWithoutValue(lines);
   var limite = data.getLimite(data.magnitudes[contaminante.code]).limite;
   var maxValue=Math.max(data.maxValue(lines), limite);
+  var yInicial=border+contaminante.y1;
   var margin = border,
       w = p.width-menu.width - 2 * margin, // chart area width and height
-      h = p.height - 2 * margin;
+      //h = p.height - 2 * margin;
+	  h = p.height - (border+yInicial);
 
   var barWidth =  (w / lastIdx) * 0.8 / lines.length; // width of bar
   var barMargin = (w / lastIdx) * 0.2; // margin between two bars
 
   p.push();
   p.stroke('dark-gray');
-  p.line(margin, h+margin, margin+w, h+margin);
+  p.line(margin, h+yInicial, margin+w, h+yInicial);
   p.textSize(this.getTextSize());
   var labels=[];
   for(var idxLine=0; idxLine<lines.length; idxLine++){
@@ -452,7 +465,7 @@ p.barChart = function(cont, filterTxt, lines){
 	var values = line.values.slice(0, lastIdx);
 	//info('barChart con '+values.length+' values');
 
-	var x=margin+(idxLine*barWidth), y=margin+h;
+	var x=margin+(idxLine*barWidth), y=yInicial+h;
   
     p.push();
 	var est = data.estaciones[lines[idxLine].station];
@@ -475,7 +488,7 @@ p.barChart = function(cont, filterTxt, lines){
 	p.pop();
   }
   // Limite
-  p.drawLimite(limite, maxValue, margin, w, y, margin, data.magnitudes[contaminante.code].unidad);
+  p.drawLimite(limite, maxValue, margin, w, y, yInicial, data.magnitudes[contaminante.code].unidad);
   // labels valores numericos
   p.noStroke();
   p.removeLabels(labels);
@@ -529,7 +542,7 @@ p.areaLineChart = function(cont, filterTxt, lines, isArea){
 	var xMin=border;
 	var xMax=p.width-border-menu.width;
 	var yMin=p.height-(border*2);
-	var yMax=border;
+	var yMax=border+contaminante.y1;
 	var labels=[];
 	// line de abajo:
 	p.stroke('dark-gray');

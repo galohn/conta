@@ -43,7 +43,27 @@ var app = {
 				if(ev.direction==4){showP1();}//zona.className='swipe-derecha';
 			}
 		});
+		app.detectZoom('pieChart', myPieP5);
+		app.detectZoom('barChart', myBarP5);
+		info('hammer setted');
 	},
+	detectZoom : function(elementId, chartElement){
+		var zona=new Hammer(document.getElementById(elementId));
+		zona.get('pinch').set({ enable: true });
+		zona.on('pinch', function(ev){
+			info('jjjjj '+ev.scale);
+			if(new Date().getTime()-app.lastPinch.time > 90){
+				var value=chartElement.getTextSize();
+				var newValue=ev.scale>1?value+1:value-1;
+				newValue=Math.min(28,Math.max(6,newValue));
+				info(value+" ==> "+newValue);
+				chartElement.setTextSize(newValue); ///app.lastPinch.value)));
+				app.lastPinch.time = new Date().getTime();
+				app.lastPinch.value=ev.scale;
+			}
+		});
+	},
+	lastPinch:{time: new Date().getTime(), value:16},
 	// Bind Event Listeners
 	bindAdEvents: function () {
 		if (window.admob) {
@@ -167,11 +187,12 @@ data.onLoad.push(function(){
 		myPieP5.setVisibleAddBoton(false);
 		myPieP5.setDoubleSize(false);
 	});
-	myBarP5.setCloseBoton(function(){
+	var closeBAction=function(){
 		document.getElementById('barChart').style.display='none';
 		myPieP5.setVisibleAddBoton(true);
 		myPieP5.setDoubleSize(true);
-	});
+	};
+	myBarP5.setCloseBoton(closeBAction);
 	myPieP5.setLines(lines);
 	myBarP5.setLines(lines);
 
@@ -179,6 +200,8 @@ data.onLoad.push(function(){
 	myBarP5.setExtVName("myBarP5");
 
 	p1Init();
+	
+	closeBAction();
 });
 
 data.getLines();
