@@ -9,7 +9,7 @@ var bcr=null;
 function calculateBcr(){
 	//var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 	var tmp=document.getElementById('svg').getBoundingClientRect();
-	if (tmp.height>10) bcr=tmp;
+	if (tmp.height>10||bcr==null) bcr=tmp;
 	return bcr;
 }
 function getBcr(){
@@ -74,7 +74,8 @@ function getZone(zone){
 	}
 	var style=getStyle(zone);
 	//str='<polygon points="'+str+'"'+(style==null?'':' style="'+'fill:'+style+';stroke:black;stroke-width:1'+'"')+' />';
-	str=html('polygon',{onclick: "zoneClicked('"+zone.abrv+"')", points:str, style:'fill:'+style+';stroke:black;stroke-width:1'},"");
+	//str=html('polygon',{onclick: "zoneClicked('"+zone.abrv+"')", points:str, style:'fill:'+style+';stroke:black;stroke-width:1'},"");
+	str=html('polygon',{points:str, style:'fill:'+style+';stroke:black;stroke-width:1'},"");
 	for(var i=0; i<zone.txts.length; i++){
 		str+='<text x="'+mapX(zone.txts[i].x)+'" y="'+mapY(zone.txts[i].y)+'" fill="black">'+zone.txts[i].txt+'</text>';
 	}
@@ -90,6 +91,10 @@ function zoneClicked(zoneAbrv){
 }
 function zoneName(zoneAbrv){
 	for(var idx in zones) if(zones[idx].abrv==zoneAbrv) return zones[idx].name;
+	return null;
+}
+function zoneAbrv(zoneName){
+	for(var idx in zones) if(zones[idx].name==zoneName) return zones[idx].abrv;
 	return null;
 }
 function calculateRect(){
@@ -117,13 +122,13 @@ function getMapa(){
 	}
 	//return getZone(no,'blue')+getZone(ne,'yellow')+getZone(c,'pink')+getZone(so,'green')+getZone(se,'coral');}
 	debug("triangulo atras es "+trianguloAtras("goToP1Der()"));
-	return mapa+trianguloAtras("goToP1Der()");
+	return mapa; //+trianguloAtras("goToP1Der()");
 }
 function getMagnitudeColor(mag){
 	var linesByMag=data.filterByMagnitude(mag.code, data.lines);
 	return getStyleLines(linesByMag);
 }
-function getCuadro(){
+function getCuadroOld(){
 	var mag=[];
 	var fila1=td();
 	for(var key in data.magnitudes){
@@ -147,9 +152,43 @@ function getCuadro(){
 			var value=data.getLimite(mag[m]).limite;
 			var linesByZoneAndMag=data.filterByMagnitude(mag[m].code, linesZone);
 			var style = getStyleLines(linesByZoneAndMag);
-			fila+=td({style:backColor(style),onclick:"clickedOnMagnitud('"+mag[m].code+"');"}, br());
+			//fila+=td({style:backColor(style),onclick:"clickedOnMagnitud('"+mag[m].code+"');"}, br());
+			fila+=td({style:backColor(style)}, br());
 		}
 		fila=td({width:"8%"},keyZ)+fila;
+		filas+=tr(fila);
+	}
+	//info('cuadro='+filas);
+	return table({style:"width:100%; padding: 15px;"}, fila1+filas);
+}
+function getCuadro(){
+	var mag=[];
+	var fila1=td();
+	for(var key in data.magnitudes){
+		var magn=data.magnitudes[key];
+		if(data.getLimite(magn).limite!=-1){
+			magn.code=key;
+			mag.push(magn);
+		}
+	}
+	for (var keyZ in data.zonas) {
+		fila1+=td({style:textAlign(Center)},zoneAbrv(keyZ));
+	}
+	//info('mag:'); info(mag);
+	var filas="";
+	//info(data.zonas);
+	for(var m=0; m<mag.length; m++){
+		var magn=mag[m];
+		var fila="";
+		for (var keyZ in data.zonas) {
+			var zona=data.zonas[keyZ];
+			var linesZone=data.filterByZones([keyZ], data.lines);
+			var linesByZoneAndMag=data.filterByMagnitude(mag[m].code, linesZone);
+			var style = getStyleLines(linesByZoneAndMag);
+			//fila+=td({style:backColor(style),onclick:"clickedOnMagnitud('"+mag[m].code+"');"}, br());
+			fila+=td({style:backColor(style)}, br());
+		}
+		fila=td({width:"2%",style:textAlign(Center)},magn.abrv)+fila;
 		filas+=tr(fila);
 	}
 	//info('cuadro='+filas);
@@ -329,34 +368,37 @@ function infoContaminantes(){
 	//debug(str);
 	return str;
 }
-function goToP1Der(){
-	document.getElementById('p1Izq').style.display = 'none';
-	document.getElementById('p1Der').style.display = 'block';
+function styleDisplay(ids, value){
+	for(var i=0; i<ids.length; i++) document.getElementById(ids[i]).style.display = value;
+}
+function goToP1Der(){ // Ayuda
+	styleDisplay(['p0', 'p1Izq', 'contaminantes', 'cuerpo'], 'none');
+	styleDisplay(['p1','p1Der'], 'block');
 }
 function p1Clicked(){ // showCharts
-	document.getElementById('p1').style.display = 'none';
-	document.getElementById('cuerpo').style.display = 'block'; // charts
-	document.getElementById('menu').style.display = 'none';  // Función de filtro y seleccion de contaminante en la pantalla de grafico
+	styleDisplay(['p0', 'p1', 'contaminantes', 'menu'], 'none'); // menu = Función de filtro y seleccion de contaminante en la pantalla de grafico
+	styleDisplay(['cuerpo'], 'block');
 	donde='p2';
 }
 function contaminantesClicked(){
-	document.getElementById('contaminantes').style.display = 'block';
-	document.getElementById('p1').style.display = 'none';
-	document.getElementById('cuerpo').style.display = 'none';
+	styleDisplay(['p0', 'p1', 'cuerpo'], 'none');
+	styleDisplay(['contaminantes'], 'block');
 	donde='p2';
+	//info('contaminantesClicked 2');
 }
-function showP1(){
-	document.getElementById('p1Izq').style.display = 'block';
-	document.getElementById('p1Der').style.display = 'none';
-	document.getElementById('p1').style.display = 'block';  document.getElementById("svg").style.display = 'block'; // refresco
-	document.getElementById('cuerpo').style.display = 'none'; // charts
-	document.getElementById('contaminantes').style.display = 'none';
-	document.getElementById('menu').style.display = 'none';
+function showP0(){ // Pagina principal
+	styleDisplay(['p1', 'cuerpo', 'contaminantes', 'menu'], 'none');
+	styleDisplay(['p0'], 'block');
+}
+function showP1(){ // Mapa
+	styleDisplay(['p0', 'p1Der', 'cuerpo', 'contaminantes', 'menu'], 'none');
+	styleDisplay(['p1', 'p1Izq', 'svg'], 'block');
+	resizedP1();
 }
 function p1Init(){
 	resizedP1();
 	document.getElementById("contaminantes").innerHTML = infoContaminantes();
-	showP1();
+	//showP1();
 	p1DiayHora();
 }
 function p1DiayHora(){

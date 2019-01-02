@@ -34,18 +34,25 @@ var app = {
 		} else {
 			app.onDeviceReady();
 		}
-		var zona = document.getElementById('p1');
+		app.hammerZona('p1Izq',showP0,p1Clicked);
+		app.hammerZona('cuerpo',showP1,contaminantesClicked);
+		app.hammerZona('contaminantes',p1Clicked,goToP1Der);
+		app.hammerZona('p1Der',contaminantesClicked,showP0);
+		
+		app.detectZoom('pieChart', myPieP5);
+		app.detectZoom('barChart', myBarP5);
+		info('hammer setted');
+	},
+	hammerZona : function(nombre, fIzq, fDer){
+		var zona = document.getElementById(nombre);
 		var hammer = new Hammer(zona);
 
 		hammer.on('swipe', function(ev){
 			if(ev.type=='swipe'){
-				if(ev.direction==2){goToP1Der();} // mov a la izquierda
-				if(ev.direction==4){showP1();}//zona.className='swipe-derecha';
+				if(ev.direction==2){fDer();} // mov a la izquierda
+				if(ev.direction==4){fIzq();}//zona.className='swipe-derecha';
 			}
 		});
-		app.detectZoom('pieChart', myPieP5);
-		app.detectZoom('barChart', myBarP5);
-		info('hammer setted');
 	},
 	detectZoom : function(elementId, chartElement){
 		var zona=new Hammer(document.getElementById(elementId));
@@ -228,9 +235,9 @@ function onBackKeyDown(){
 	}*/
 	info('onBackKeyDown');
 	if(document.getElementById('menu').style.display == 'block') p1Clicked();
-	else if(document.getElementById('p1Der').style.display == 'block') showP1();
-	else if(document.getElementById('p1').style.display == 'block') navigator.app.exitApp();
-	else showP1(); // contaminantes o p2
+	else if(document.getElementById('p1').style.display == 'block') showP0();
+	else if(document.getElementById('p0').style.display == 'block') navigator.app.exitApp();
+	else showP0(); // contaminantes o p2
 }
 
 function init(){

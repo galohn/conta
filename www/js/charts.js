@@ -31,7 +31,7 @@ p.setup = function() {
   p.textFont(font);
   contaminante.code=10;
   
-  var canva=p.createCanvas(p.windowWidth, p.windowHeight/2.2);
+  var canva=p.createCanvas(p.windowWidth, p.windowHeight);
   debug(canva);
   //var canva=p.createCanvas(p._userNode.clientWidth, p._userNode.clientHeight);
   //canva.parent('pieChart');
@@ -41,6 +41,7 @@ p.setup = function() {
   //p.callAjax();
   this.setMenu();
   canva.mousePressed(this.doOnMousePress);
+  p.windowResized();
 }
 
 p.setTextSize = function (newValue){
@@ -361,6 +362,7 @@ p.showFilter=function(filterTxt){ // origin [0, 0] is the coordinate in the uppe
 }
 
 p.pieChart = function(cont, filterTxt, lines) {
+  p.push();
   var diameter = Math.min(p.width, p.height)-border;
   if(p.height*1.6>p.width) diameter=diameter-border*3;
   else diameter-=(contaminante.y1+border);
@@ -403,6 +405,7 @@ p.pieChart = function(cont, filterTxt, lines) {
   }
   p.showClose();
   p.showBotonSuma();
+  p.pop();
 }
 
 p.isPointInsideArc = function (){
