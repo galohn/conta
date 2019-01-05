@@ -128,7 +128,7 @@ var app = {
 			//info(window.plugins.AdMob);
 			//info(window.plugins.admob);
 		}
-		window.setInterval(recurrente, 60*1000);
+		//window.setInterval(recurrente, 60*1000);
 		if(window.admob){
 			app.bindAdEvents();
 			info(admob);
@@ -141,7 +141,7 @@ var app = {
 				//tappxShare:           0.5                                        // Optional
 				,bannerAtTop: false // set to true, to put banner at top
 				,overlap: false // set to true, to allow banner overlap webview
-				,isTesting: true // receiving test ads (do not test with real ads as your account will be banned)
+				,isTesting: false // receiving test ads (do not test with real ads as your account will be banned)
 				,autoShowBanner: true // auto show banners ad when loaded
 			});
 			info("creando banner:");
