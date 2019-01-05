@@ -12,6 +12,7 @@
     <preference name="DisallowOverscroll" value="true" />
     <preference name="android-minSdkVersion" value="26" />
 	<preference name="android-targetSdkVersion" value="26" />
+	<preference name="android-compileSdkVersion" value="26" />
 	<preference name="phonegap-version" value="cli-8.0.0" />
     <platform name="android">
         <icon density="ldpi" src="www/res/icon/android/drawable-ldpi-icon.png" />
