@@ -70,15 +70,18 @@ getLimite : function(magnitud){
 
 getOverflowSomeLimit : function(line){ // Devuelve el % de overflow sobre el limite establecido
 	//if(line.magnitude=='12') return -1;
-	var mag=data.magnitudes[line.magnitude];
-	//info(line.magnitude+"-->"+mag);
-	var limite = data.getLimite(mag);
-	var overflow=0;
-	if('maximaDiaria' in mag) overflow = line.maxHour!=-1?line.values[line.maxHour]:0;
-	else overflow = Math.max(line.medianValue, line.avgValue);
-	if (overflow/limite.limite>.5)
-		debug(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
-	return overflow/limite.limite;
+	if (data.magnitudes[line.magnitude] == undefined) return 0;
+	else{
+		var mag=data.magnitudes[line.magnitude];
+		//info(line.magnitude+"-->"+mag);
+		var limite = data.getLimite(mag);
+		var overflow=0;
+		if('maximaDiaria' in mag) overflow = line.maxHour!=-1?line.values[line.maxHour]:0;
+		else overflow = Math.max(line.medianValue, line.avgValue);
+		if (overflow/limite.limite>.5)
+			debug(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
+		return overflow/limite.limite;
+	}
 },
 
 getZonaEstacion : function(station){

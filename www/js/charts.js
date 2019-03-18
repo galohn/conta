@@ -73,12 +73,14 @@ p.draw = function() {
 			//lines2=data.sortAscByMax(lines2).slice(-3);
 			lines2=data.filterByZones(p.getZoneNames(),lines2);
 			lines2=typeFilterSelected.tf.fn[typeFilterSelected.idxFn](lines2).slice(-1*typeFilterSelected.cnt);
-			var magnitude=data.magnitudes[contaminante.code].name;
-			var str = typeFilterSelected.tf.txt+' '+(typeFilterSelected.idxFn==0?"mas alto":"mas bajo"); // typeFilterSelected.cnt+' con '+
-			if     (type.pie ==typeChart) p.pieChart(magnitude, str, lines2);
-			else if(type.area==typeChart) p.areaLineChart(magnitude, str, lines2, true);
-			else if(type.line==typeChart) p.areaLineChart(magnitude, str, lines2, false);
-			else if(type.bar ==typeChart) p.barChart(magnitude, str, lines2, false);
+			if (data.magnitudes[contaminante.code] !== undefined){
+				var magnitude=data.magnitudes[contaminante.code].name;
+				var str = typeFilterSelected.tf.txt+' '+(typeFilterSelected.idxFn==0?"mas alto":"mas bajo"); // typeFilterSelected.cnt+' con '+
+				if     (type.pie ==typeChart) p.pieChart(magnitude, str, lines2);
+				else if(type.area==typeChart) p.areaLineChart(magnitude, str, lines2, true);
+				else if(type.line==typeChart) p.areaLineChart(magnitude, str, lines2, false);
+				else if(type.bar ==typeChart) p.barChart(magnitude, str, lines2, false);
+			}
 		}
 		swDraw=false;
 	}
