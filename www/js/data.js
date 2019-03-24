@@ -64,7 +64,7 @@ getLimite : function(magnitud){
 	else if(valor!=null && 'informacion' in valor.valor) {valor.limite=valor.valor.informacion*1.5; valor.over='informacion'}
 	else if(valor!=null && 'objetivo' in valor.valor) {valor.limite=valor.valor.objetivo*1.5; valor.over='objetivo'}
 	else valor={limite: -1};
-	//info('limite en '+magnitud.name+'='+valor.limite);
+	// info('limite en '+magnitud.name+'='+valor.limite);
 	return valor;
 },
 

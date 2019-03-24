@@ -27,7 +27,7 @@ p.preload = function() {
   font = p.loadFont('./assets/texgyreheros-regular.otf');
 }
 p.setup = function() {
-  //var canva=p.createCanvas(screen.width, screen.height/4);
+  // var canva=p.createCanvas(screen.width, screen.height/4);
   p.textFont(font);
   contaminante.code=10;
   
