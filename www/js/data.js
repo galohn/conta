@@ -80,7 +80,7 @@ getOverflowSomeLimit : function(line){ // Devuelve el % de overflow sobre el lim
 		else overflow = Math.max(line.medianValue, line.avgValue);
 		if (overflow/limite.limite>.5)
 			debug(mag.name+' overflow='+overflow+' limite='+limite.limite+' '+limite.name+' '+limite.over);
-		return overflow/limite.limite;
+		return limite.limite==-1?-1:overflow/limite.limite;
 	}
 },
 
