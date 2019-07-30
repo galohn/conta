@@ -54,9 +54,9 @@ getLimite : function(magnitud){
 	var valor=null;
 	if(magnitud!=undefined){
 		if('maximaDiaria' in magnitud) valor={valor: magnitud.maximaDiaria, name:'maximaDiaria', limite:-1};
-		else if('mediaHoraria' in magnitud) valor={valor: magnitud.mediaHoraria, name:'mediaHoraria', limite:-1};
 		else if('mediaDiaria' in magnitud) valor={valor: magnitud.mediaDiaria, name:'mediaDiaria', limite:-1};
 		else if('mediaAnual' in magnitud) valor={valor: magnitud.mediaAnual, name:'mediaAnual', limite:-1};
+		else if('mediaHoraria' in magnitud) valor={valor: magnitud.mediaHoraria, name:'mediaHoraria', limite:-1};
 	}
 	if(valor!=null && 'limite' in valor.valor) {valor.limite=valor.valor.limite; valor.over='limite'}
 	else if(valor!=null && 'critico' in valor.valor) {valor.limite=valor.valor.critico; valor.over='critico'}
