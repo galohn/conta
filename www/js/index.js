@@ -128,7 +128,7 @@ var app = {
 			//info(window.plugins.AdMob);
 			//info(window.plugins.admob);
 		}
-		//window.setInterval(recurrente, 60*1000);
+		window.setInterval(recurrente, 5*60*1000); // x5Minuto
 		if(window.admob){
 			app.bindAdEvents();
 			info(admob);
@@ -166,14 +166,16 @@ var app = {
 };
 
 function recurrente(){
-	info("admob="+window.admob+".");
+	info("recurrente admob="+window.admob+".");
 	data.getLines();
 }
 
 ///////////////////////
 
 function info(str){
-	console.log(str);
+	var today = new Date();
+	var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+	console.log(time + " " + str);
 }
 function debug(str){
 	//console.log(str);
@@ -185,9 +187,9 @@ var myPieP5 = new p5(sketch, 'pieChart').setPie();
 var myBarP5 = new p5(sketch, 'barChart').setBar();
 
 
-var lines = []; //data.getLines();
+// var lines = []; //data.getLines();
 data.onLoad.push(function(){
-	lines=data.getLines();
+	// lines=data.getLines();
 
 	myPieP5.setAddBoton(function(){
 		document.getElementById('barChart').style.display='block';
@@ -200,8 +202,8 @@ data.onLoad.push(function(){
 		myPieP5.setDoubleSize(true);
 	};
 	myBarP5.setCloseBoton(closeBAction);
-	myPieP5.setLines(lines);
-	myBarP5.setLines(lines);
+	myPieP5.setLines(data.lines);
+	myBarP5.setLines(data.lines);
 
 	myPieP5.setExtVName("myPieP5");
 	myBarP5.setExtVName("myBarP5");

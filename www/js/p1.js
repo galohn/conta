@@ -402,8 +402,8 @@ function p1Init(){
 	p1DiayHora();
 }
 function p1DiayHora(){
-	if(lines.length>0){
-		var fecha=lines[0].day;
+	if(data.lines.length>0){
+		var fecha=data.lines[0].day;
 		var anio=parseInt(fecha.substring(0,4));
 		var mes=parseInt(fecha.substring(4,6))-1;
 		var dia=parseInt(fecha.substring(6));
@@ -411,7 +411,7 @@ function p1DiayHora(){
 		const dayNames=["dom","lun","mar","mié","jue","vie","sáb"];
 		const monthNames = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
 		//var titulo="Datos del "+dia+"-"+monthNames[mes]+"-"+anio;
-		var titulo=dayNames[myDate.getDay()]+" "+dia+" "+monthNames[mes]+"<br />hasta las "+data.maxIdxValueWithoutValue(lines)+"h";
+		var titulo=dayNames[myDate.getDay()]+" "+dia+" "+monthNames[mes]+"<br />hasta las "+data.maxIdxValueWithoutValue(data.lines)+"h";
 		document.getElementById('titulo').innerHTML=html('span',{style:"text-transform:none;"},titulo);
 	}
 }
@@ -422,7 +422,7 @@ function p1DataChanged(){
 	document.getElementById("contaminantes").innerHTML = infoContaminantes();
 }
 function resizedP1(){
-	info('p1 resizedP1 '+ lines.length);
+	info('p1 resizedP1 '+ data.lines.length);
 	var h = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 	document.getElementById("svg").style.minHeight = (h/2)+"px";
 	calculateBcr();

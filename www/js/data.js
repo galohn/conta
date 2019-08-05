@@ -97,7 +97,7 @@ getZona : function(line){
 },
 
 getLines : function(){
-	if(this.lines.length>0) return this.lines;
+	//if(this.lines.length>0) return this.lines;
 	info('callAjax');
 	var HttpClient = function() {
 		this.get = function(aUrl, aCallback) {
