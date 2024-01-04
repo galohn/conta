@@ -126,7 +126,7 @@ getLines : function(){
 		}
 	}
 	var client = new HttpClient();
-	client.get('http://www.mambiente.munimadrid.es/opendata/horario.txt', function(response) {
+	client.get('http://www.mambiente.madrid.es/opendata/horario.txt', function(response) {
 		data.setLinesFromStr(response);
 	});
 	return this.lines;
